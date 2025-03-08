@@ -1,0 +1,233 @@
+:root {
+    --rosewater: #f5e0dc;
+    --flamingo: #f2cdcd;
+    --pink: #f5c2e7;
+    --mauve: #cba6f7;
+    --red: #f38ba8;
+    --maroon: #eba0ac;
+    --peach: #fab387;
+    --yellow: #f9e2af;
+    --green: #a6e3a1;
+    --teal: #94e2d5;
+    --sky: #89dceb;
+    --sapphire: #74c7ec;
+    --blue: #89b4fa;
+    --lavender: #b4befe;
+    --text: #cdd6f4;
+    --subtext-1: #bac2de;
+    --subtext-0: #a6adc8;
+    --overlay-2: #9399b2;
+    --overlay-1: #7f849c;
+    --overlay-0: #6c7086;
+    --surface-2: #585b70;
+    --surface-1: #45475a;
+    --surface-0: #313244;
+    --base: #1e1e2e;
+    --mantle: #181825;
+    --crust: #11111b;
+    --fs-lg: 5rem;
+    --fs-600: 2rem;
+    --fs-500: 1.5rem;
+    --fs-400: 1rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    background-color: var(--base);
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    margin: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    /* border: 1px solid #fff; */
+
+}
+
+.navbar a {
+    padding-bottom: 0.25rem;
+    color: var(--subtext-1);
+    text-decoration: none;
+    position: relative;
+}
+
+.navbar a:hover {
+    color: var(--subtext-0);
+}
+
+.navbar a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 0;
+    transition: width 0.5s ease;
+}
+
+.navbar a:first-child::after {
+    background-color: var(--lavender);
+}
+
+.navbar a:last-child::after {
+    background-color: var(--green);
+}
+
+.navbar a:hover::after {
+    width: 75%;
+}
+
+footer {
+    width: 100%;
+    padding: 1rem 0;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+footer p {
+    color: var(--subtext-1);
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid #fff; */
+}
+
+.title-container {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    /* border: 1px solid #fff; */
+}
+
+.title {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.title h1 {
+    color: var(--text);
+    text-align: center;
+}
+
+.title p {
+    display: block;
+    width: 70%;
+    color: var(--subtext-1);
+    text-align: center;
+}
+
+.cards-container {
+    width: 80%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    /* border: 1px solid #fff; */
+}
+
+.card {
+    width: 15rem;
+    height: auto;
+    padding: 2rem 0;
+    background-color: var(--surface-0);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card p {
+    color: var(--subtext-0);
+}
+
+.card a {
+    text-decoration: none;
+    color: var(--subtext-1);
+}
+
+.card a:hover {
+    color: var(--lavender);
+}
+
+.card:hover .icon {
+    scale: 1.1;
+}
+
+/* .card:hover a {
+    font-size: 1.125rem;
+} */
+
+.icon {
+    display: inline-block;
+    width: 8rem;
+    height: 8rem;
+}
+
+.icon.tic-tac-toe-icon {
+    -webkit-mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
+    mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: var(--sky);
+}
+
+.wordle-icon {
+    -webkit-mask: url(/static/icons/wordle.svg) no-repeat center;
+    mask: url(/static/icons/wordle.svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: var(--green);
+}
+
+.card-match-icon {
+    -webkit-mask: url(/static/icons/card-match.svg) no-repeat center;
+    mask: url(/static/icons/card-match.svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: var(--lavender);
+}
+
+.synth-icon {
+    -webkit-mask: url(/static/icons/synth.svg) no-repeat center;
+    mask: url(/static/icons/synth.svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: var(--red);
+}
+
+/* Wordle*/

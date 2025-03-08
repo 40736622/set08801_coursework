@@ -1,0 +1,11 @@
+@import "main.css";
+
+input[type="text"] {
+    width: 10rem;
+    height: 10rem;
+    border-style: none;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 50px;
+    background-color: var(--yellow);
+}
