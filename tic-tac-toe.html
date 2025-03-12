@@ -4,122 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
     <title>Tic Tac Toe</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: lightcyan;
-            text-align: center;
-        }
-
-        .container {
-            height: 70vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .game {
-            height: 60vmin;
-            width: 60vmin;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5vmin;
-            justify-content: center;
-        }
-
-        .box {
-            height: 18vmin;
-            width: 18vmin;
-            border-radius: 1rem;
-            border: none;
-            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
-            font-size: 8vmin;
-            color: red;
-            background-color: yellow;
-        }
-
-        #reset {
-            padding: 1rem;
-            font-size: 1.25rem;
-            background: #191913;
-            color: white;
-            border-radius: 1rem;
-            border: none;
-        }
-
-        .box:hover {
-            background-color: chocolate;
-        }
-
-        #new-btn {
-            padding: 1rem;
-            font-size: 1.25rem;
-            background: #191913;
-            color: white;
-            border-radius: 1rem;
-            border: none;
-        }
-
-        #msg {
-            font-size: 8vmin;
-        }
-
-        .msg-container {
-            height: 30vmin;
-        }
-
-        .hide {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="static/css/main.css">
+    <link rel="stylesheet" href="static/css/tic-tac-toe.css">
+    <script src="static/js/tic-tac-toe.js" defer></script>
 </head>
 
 <body>
-    <main>
-        <h1>Tic Tac Toe</h1>
-        <p>Welcome</p>
-        <div class="container">
-            <div class="game">
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
+    <header>
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div class="title-container">
+            <div class="title">
+                <h1>Tic Tac Toe</h1>
+                <p>Welcome</p>
+            </div>
+            <div class="container">
+                <div class="game-board">
+                    <button class="box" value="0"></button>
+                    <button class="box" value="1"></button>
+                    <button class="box" value="2"></button>
+                    <button class="box" value="3"></button>
+                    <button class="box" value="4"></button>
+                    <button class="box" value="5"></button>
+                    <button class="box" value="6"></button>
+                    <button class="box" value="7"></button>
+                    <button class="box" value="8"></button>
+                </div>
             </div>
         </div>
     </main>
-    <script>
-        const buttons = document.querySelectorAll(".box");
-        let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]]
 
-        let turnO = false;
-
-        buttons.forEach(function(button) {
-            button.addEventListener("click", () => {
-                if (turnO) {
-                    button.textContent = "O";
-                    turnO = false;
-                } else {
-                    button.textContent = "X";
-                    turnO = true;
-                }
-                button.disabled = true;
-            });
-        });
-
-        function checkWin() {
-            
-        }
-    </script>
+    <footer>
+        <p>Aiden Castillo @ 2025</p>
+    </footer>
 </body>
 
 </html>
