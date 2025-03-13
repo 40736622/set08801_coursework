@@ -1,11 +1,31 @@
 @import "main.css";
 
-input[type="text"] {
-    width: 10rem;
-    height: 10rem;
+.wordle-board {
+    display: grid;
+    gap: 1rem;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.box {
+    width: 4rem;
+    height: 4rem;
     border-style: none;
     border-radius: 10px;
     text-align: center;
-    font-size: 50px;
-    background-color: var(--yellow);
+    font-size: 25px;
+    background-color: var(--white);
+    color: var(--mantle);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#announce-result {
+    color: var(--white);
 }
