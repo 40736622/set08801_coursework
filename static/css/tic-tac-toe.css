@@ -23,3 +23,7 @@
 .box:hover {
     background-color: var(--green);
 }
+
+#announce-winner {
+    color: var(--white);
+}

@@ -1,4 +1,5 @@
 const boardBtns = document.querySelectorAll(".box");
+const announceWinner = document.getElementById("announce-winner");
 let playerXWins = 0, playerOWins = 0, computerOWins = 0, ties = 0;
 let xMoves = [], oMoves = [];
 let turnO = false, gameOver = false;
@@ -7,6 +8,7 @@ let computerPlaying = false;
 // TODO: - Add Visual and Audio cues
 //       - Add localStorage functionality
 //       - Add X, O and Tie counters
+//       - Add slash if a win happened
 
 const winningCombinations = [
     [0, 1, 2],
@@ -32,6 +34,7 @@ boardBtns.forEach(function (btn) {
 
             if (xWon) {
                 disableButtons(boardBtns);
+                announceWinner.textContent = "X Wins!";
                 console.log("X Wins!");
             }
 
@@ -45,16 +48,19 @@ boardBtns.forEach(function (btn) {
 
             if (oWon) {
                 disableButtons(boardBtns);
+                announceWinner.textContent = "O Wins!";
                 console.log("O Wins!");
             }
 
             turnO = false;
         }
 
+        playAudio();
         btn.disabled = true;
 
         // Checks if the game ends in a tie
         if (checkBoardFull() && !xWon && !oWon) {
+            announceWinner.textContent = "It's a Tie!"
             console.log("Tie!");
         }
     });
@@ -104,6 +110,20 @@ function disableButtons(btnNodeList) {
     btnNodeList.forEach((btn) => {
         btn.disabled = true;
     });
+}
+
+function playAudio() {
+    let sound = new Audio("static/audio/collect-ring.mp3");
+    sound.play().catch(e => console.error('Playback error:', e));
+}
+
+function muteAudio() {
+    // sound.muted = true;
+    return;
+}
+
+function unMuteAudio() {
+    return;
 }
 
 // TODO: Research minimax algorithm for 1P mode or use Math.Random to emulate a fake AI
