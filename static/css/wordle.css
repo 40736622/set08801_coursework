@@ -29,3 +29,38 @@
 #announce-result {
     color: var(--white);
 }
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    /* border: 1px solid white; */
+}
+
+.keyboard-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+button {
+    width: 2rem;
+    height: 2rem;
+    /* padding: 1rem; */
+    border-radius: 5px;
+    border-style: none;
+    background-color: var(--overlay-0);
+    color: var(--white);
+    text-align: center;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: var(--overlay-2);
+}
+
+.enter-btn {
+    width: 2.5rem;
+}
