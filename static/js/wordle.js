@@ -1,25 +1,36 @@
 const announceResult = document.getElementById("announce-result");
+const keyboardBtns = document.querySelectorAll("button");
+
+const correctLetterColor = "#a6e3a1";
+const misplacedLetterColor = "#f9e2af";
+
 const row = document.querySelectorAll(".row");
 let activeRow = document.querySelector(".row-active");
 
 const MAX_ATTEMPTS = 6;
 let currentAttempt = 1;
 let secretWord = "", currentGuess = "";
-let secretWordLetters = [];
 
-let dailyStreak = 0;
-let gameState = "in_progress"; // in_progress, win, lost
-let guesses = [];
-let letterEvaluations = [];
-
-const correctLetterColor = "#a6e3a1";
-const misplacedLetterColor = "#f9e2af";
+// let gameProgress = {
+//     secretWord,
+//     MAX_ATTEMPTS,
+//     gameState, // in_progress, won, lost
+//     currentGuess,
+//     currentAttempt,
+//     activeRow, // Cross check this
+//     guesses,
+//     letterEvaluations,
+//     dailyStreak
+// }
 
 // BUG: - When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
+//      - Yellow highlight for misplaced letter is also registering if guess word has multiple correct guess letters.
+
 // TODO: - Add play again functionality (reset board and choose another secret word)
 //       - Add streak and progress tracker
 //       - Also make the trackers work with localStorage
 //       - Add audio functionality
+//       - Add code comments
 
 function getActiveBoxes() {
     return activeRow.querySelectorAll(".box");
@@ -29,6 +40,12 @@ let activeBoxes = getActiveBoxes();
 let currentIndex = 0;
 
 /* ------------------ Game Logic -----------------------*/
+keyboardBtns.forEach((button) => {
+    button.addEventListener("click", (e) => {
+        console.log(e.target.textContent.trim());
+    });
+});
+
 document.addEventListener("keydown", keyPressed);
 
 // TODO: - Make it more efficient
@@ -44,7 +61,7 @@ function keyPressed(event) {
         }
     }
 
-    // Checks if key press was a letter
+    // Checks if key press is a letter
     if (event.key.match(/^[a-zA-Z]$/g)) {
         if (currentIndex < 5) {
             activeBoxes[currentIndex].textContent = event.key.toUpperCase();
@@ -57,15 +74,25 @@ function keyPressed(event) {
 //       - Add a check to see if the guess word is too short to be submitted.
 function submitGuessWord() {
     activeBoxes.forEach(box => currentGuess += box.textContent.toLowerCase());
+
+    // if (currentGuess.length < 5) {
+    //     alert("Word is too short!");
+    //     currentGuess = "";
+    // }
+
+    // if (!wordleList.includes(currentGuess)) {
+    //     alert("Word doesn't exist within the list!");
+    // }
+
     if (checkWord(currentGuess, secretWord)) {
-        checkLetters(secretWordLetters, currentGuess)
+        checkLetters(secretWord, currentGuess)
         announceResult.textContent = "Congratulation, you won.";
-        //console.log("Right")
+        //console.log("Right");
     } else {
         //console.log("Wrong");
 
         if (currentAttempt < 6) {
-            checkLetters(secretWordLetters, currentGuess);
+            checkLetters(secretWord, currentGuess);
 
             currentAttempt++;
 
@@ -75,12 +102,13 @@ function submitGuessWord() {
 
             activeBoxes = getActiveBoxes();
 
+            // Reset row index traversal and current guess word
             currentIndex = 0;
             currentGuess = "";
         } else {
-            checkLetters(secretWordLetters, currentGuess);
+            checkLetters(secretWord, currentGuess);
             announceResult.textContent = `Sorry, you lost. The word was ${secretWord}.`;
-            //console.log("Game Over!")
+            //console.log("Game Over!");
         }
     }
 }
@@ -90,16 +118,14 @@ function deleteLetter() {
     return;
 }
 
-function splitWordToLetters(word) {
-    return word.split("");
-}
-
-// TODO: - Add functionality for finding misplaced letters
-function checkLetters(secretWordLetters, guessWord) {
+// Bug: - Misplaced letters logic needs to be fixed
+function checkLetters(secretWord, guessWord) {
     let correctlyPlacedLetters = [];
+    let remainingLetters = [];
     let misplacedLetters = [];
 
-    guessWordLetters = splitWordToLetters(guessWord);
+    let secretWordLetters = secretWord.split("");
+    let guessWordLetters = guessWord.split("");
 
     for (let i = 0; i < guessWord.length; i++) {
         if (secretWordLetters.includes(guessWordLetters[i]) && secretWordLetters[i] === guessWordLetters[i]) {
@@ -109,13 +135,14 @@ function checkLetters(secretWordLetters, guessWord) {
         }
     }
 
-    changeLetterColor(correctlyPlacedLetters, misplacedLetters);
+    console.log(correctlyPlacedLetters, misplacedLetters);
+    //changeLetterColor(correctlyPlacedLetters, misplacedLetters);
 }
 
-// TODO: - Add functionality to change color for misplaced letters
-function changeLetterColor(correctLetters, misplacedLetters) {
-    if (correctLetters && correctLetters.length > 0) {
-        for (let index of correctLetters) {
+// TODO: - Recheck logic
+function changeLetterColor(correctlyPlacedLetters, misplacedLetters) {
+    if (correctlyPlacedLetters && correctlyPlacedLetters.length > 0) {
+        for (let index of correctlyPlacedLetters) {
             activeBoxes[index].style.backgroundColor = correctLetterColor;
         }
     }
@@ -127,7 +154,7 @@ function changeLetterColor(correctLetters, misplacedLetters) {
     }
 }
 
-// TODO: - Check if this works at all
+// TODO: - Recheck logic
 function checkWord(guessWord, wordleWord) {
     return guessWord === wordleWord;
 }
@@ -153,16 +180,34 @@ function getRandomWord(words) {
     }
 }
 
+// function countLetterOccurence(word) {
+//     let letterOccurences = new Map();
+//     let currentLetter = "";
+
+//     for (let i = 0; i < word.length; i++) {
+//         currentLetter = word[i];
+
+//         if (letterOccurences.has(currentLetter)) {
+//             letterOccurences.get(currentLetter).push(i);
+//         } else {
+//             letterIndexes = [];
+//             letterIndexes.push(i);
+//             letterOccurences.set(word[i], letterIndexes);
+
+//         }
+//     }
+//     return letterOccurences;
+// }
+
 // TODO: - Add all came functionality here or at least most
 async function startWordleGame() {
     const wordleList = await getWordleWords();
 
     secretWord = getRandomWord(wordleList);
     console.log(secretWord);
-
-    secretWordLetters = splitWordToLetters(secretWord);
 }
 
+// TODO: -Add reset wordle game logic
 async function resetWordleGame() {
     return;
 }
