@@ -1,5 +1,30 @@
 @import "main.css";
 
+
+p {
+    color: var(--subtext-1);
+}
+
+.settings-row {
+    width: 55vmin;
+    height: auto;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.player-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player-settings p {
+    font-size: 0.9rem;
+}
+
 .game-board {
     height: 60vmin;
     width: 60vmin;
@@ -24,6 +49,48 @@
     background-color: var(--green);
 }
 
+.results-board {
+    width: 55vmin;
+    height: auto;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    /* border: 1px solid #fff; */
+}
+
+.score-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 #announce-winner {
     color: var(--white);
+}
+
+.announce-card {
+    width: 40%;
+    height: auto;
+    opacity: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: -1;
+    background-color: var(--overlay-1);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.announce-card.show {
+    opacity: 1;
+    z-index: 999;
 }
