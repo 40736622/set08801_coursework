@@ -1,7 +1,8 @@
 const announceResult = document.getElementById("announce-result");
-const keyboardBtns = document.querySelectorAll("button");
+const keyboardBtns = document.querySelectorAll(".btn");
 
 const correctLetterColor = "#a6e3a1";
+const incorrectLetterColor = "#585b70";
 const misplacedLetterColor = "#f9e2af";
 
 const row = document.querySelectorAll(".row");
@@ -24,10 +25,11 @@ let secretWord = "", currentGuess = "";
 // }
 
 // BUG: - When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
-//      - Yellow highlight for misplaced letter is also registering if guess word has multiple correct guess letters.
+//      ✅ Yellow highlight for misplaced letter is also registering if guess word has multiple correct guess letters.
 
-// TODO: - Add play again functionality (reset board and choose another secret word)
-//       - Add streak and progress tracker
+// TODO: ✅ Make the keyboard on the website work 
+//       - Add play again functionality (reset board and choose another secret word)
+//       - Add streak and progress tracker and date streak refresh
 //       - Also make the trackers work with localStorage
 //       - Add audio functionality
 //       - Add code comments
@@ -43,6 +45,21 @@ let currentIndex = 0;
 keyboardBtns.forEach((button) => {
     button.addEventListener("click", (e) => {
         console.log(e.target.textContent.trim());
+
+        if (e.target.textContent.trim() === "Enter") {
+            submitGuessWord();
+        }
+
+        if (e.target.textContent.trim() === "Del") {
+            deleteLetter();
+        }
+
+        if (e.target.textContent.trim().match(/^[a-zA-Z]$/g)) {
+            if (currentIndex < 5) {
+                activeBoxes[currentIndex].textContent = e.target.textContent.trim().toUpperCase();
+                currentIndex++;
+            }
+        }
     });
 });
 
@@ -55,10 +72,7 @@ function keyPressed(event) {
     }
 
     if (event.key === "Backspace") {
-        if (currentIndex > 0) {
-            currentIndex--;
-            activeBoxes[currentIndex].textContent = "";
-        }
+        deleteLetter();
     }
 
     // Checks if key press is a letter
@@ -115,41 +129,58 @@ function submitGuessWord() {
 
 // Some of the logic is already in keyPressed
 function deleteLetter() {
-    return;
+    if (currentIndex > 0) {
+        currentIndex--;
+        activeBoxes[currentIndex].textContent = "";
+    }
 }
 
 // Bug: - Misplaced letters logic needs to be fixed
+// Ideas: - Try a two loop approach instead
+//        - First loop to check for all the correct letters
+//        - Second loop to check the remaining misplaced letters
 function checkLetters(secretWord, guessWord) {
-    let correctlyPlacedLetters = [];
-    let remainingLetters = [];
-    let misplacedLetters = [];
-
+    let lettersEvalution = Array(5).fill("");
     let secretWordLetters = secretWord.split("");
     let guessWordLetters = guessWord.split("");
 
-    for (let i = 0; i < guessWord.length; i++) {
-        if (secretWordLetters.includes(guessWordLetters[i]) && secretWordLetters[i] === guessWordLetters[i]) {
-            correctlyPlacedLetters.push(i);
-        } else if (secretWordLetters.includes(guessWordLetters[i]) && secretWordLetters[i] !== guessWordLetters[i]) {
-            misplacedLetters.push(i);
+    for (let i = 0; i < guessWordLetters.length; i++) {
+        if (guessWordLetters[i] === secretWordLetters[i]) {
+            lettersEvalution[i] = "correct"
+            secretWordLetters[i] = "";
+            guessWordLetters[i] = "";
         }
     }
 
-    console.log(correctlyPlacedLetters, misplacedLetters);
-    //changeLetterColor(correctlyPlacedLetters, misplacedLetters);
+    for (let i = 0; i < guessWordLetters.length; i++) {
+        if (!guessWordLetters[i]) continue;
+        const index = secretWordLetters.indexOf(guessWordLetters[i]);
+        if (index !== -1) {
+            lettersEvalution[i] = "misplaced";
+            secretWordLetters[index] = ""
+        }
+    }
+
+    lettersEvalution.forEach((element, index) => {
+        if (element === "") {
+            lettersEvalution[index] = "incorrect";
+        }
+    });
+
+    changeLetterColor(lettersEvalution);
+
+    //return lettersEvalution;
 }
 
 // TODO: - Recheck logic
-function changeLetterColor(correctlyPlacedLetters, misplacedLetters) {
-    if (correctlyPlacedLetters && correctlyPlacedLetters.length > 0) {
-        for (let index of correctlyPlacedLetters) {
-            activeBoxes[index].style.backgroundColor = correctLetterColor;
-        }
-    }
-
-    if (misplacedLetters && misplacedLetters.length > 0) {
-        for (let index of misplacedLetters) {
-            activeBoxes[index].style.backgroundColor = misplacedLetterColor;
+function changeLetterColor(lettersEvalution) {
+    for (let i = 0; i < lettersEvalution.length; i++) {
+        if (lettersEvalution[i] === "correct") {
+            activeBoxes[i].style.backgroundColor = correctLetterColor;
+        } else if (lettersEvalution[i] === "misplaced") {
+            activeBoxes[i].style.backgroundColor = misplacedLetterColor;
+        } else {
+            activeBoxes[i].style.backgroundColor = incorrectLetterColor;
         }
     }
 }
@@ -180,25 +211,6 @@ function getRandomWord(words) {
     }
 }
 
-// function countLetterOccurence(word) {
-//     let letterOccurences = new Map();
-//     let currentLetter = "";
-
-//     for (let i = 0; i < word.length; i++) {
-//         currentLetter = word[i];
-
-//         if (letterOccurences.has(currentLetter)) {
-//             letterOccurences.get(currentLetter).push(i);
-//         } else {
-//             letterIndexes = [];
-//             letterIndexes.push(i);
-//             letterOccurences.set(word[i], letterIndexes);
-
-//         }
-//     }
-//     return letterOccurences;
-// }
-
 // TODO: - Add all came functionality here or at least most
 async function startWordleGame() {
     const wordleList = await getWordleWords();
@@ -207,7 +219,7 @@ async function startWordleGame() {
     console.log(secretWord);
 }
 
-// TODO: -Add reset wordle game logic
+// TODO: - Add reset wordle game logic
 async function resetWordleGame() {
     return;
 }

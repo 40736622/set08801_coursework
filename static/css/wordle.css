@@ -45,18 +45,20 @@
     gap: 0.5rem;
 }
 
-button {
+.btn {
     width: 2rem;
     height: 2rem;
-    /* padding: 1rem; */
+    padding: 1rem;
     border-radius: 5px;
-    border-style: none;
     background-color: var(--overlay-0);
     color: var(--white);
-    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-button:hover {
+.btn:hover {
     cursor: pointer;
     background-color: var(--overlay-2);
 }
