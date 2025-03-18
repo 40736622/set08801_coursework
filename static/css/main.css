@@ -46,12 +46,23 @@ body {
 
 html {
     font-size: 16px;
+    scroll-behavior: smooth;
 }
 
 body {
     background-color: var(--base);
     display: flex;
     flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text);
+}
+
+p {
+    color: var(--subtext-1);
 }
 
 .navbar {
@@ -137,7 +148,6 @@ main {
 }
 
 .title h1 {
-    color: var(--text);
     text-align: center;
 }
 

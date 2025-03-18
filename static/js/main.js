@@ -1,16 +1,13 @@
-export function playAudio(audioPath) {
-    const sound = new Audio(audioPath);
-    sound.play().catch(err => console.error("Playback error:", err));
-}
-
-export function muteAudio(...audioFiles) {
-    for (const audioFile of audioFiles) {
-        audioFile.muted = true;
+export function playAudio(audioPath, isMute) {
+    if (!isMute) {
+        const sound = new Audio(audioPath);
+        sound.play().catch(err => console.error("Playback error:", err));
     }
 }
 
-export function unMuteAudio(...audioFiles) {
+export function toggleMute(...audioFiles) {
     for (const audioFile of audioFiles) {
-        audioFile.muted = false;
+        audioFile.muted = !audioFile.muted;
+        audioFile.pause();
     }
 }
