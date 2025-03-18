@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
     <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="static/css/main.css">
     <link rel="stylesheet" href="static/css/tic-tac-toe.css">
-    <script type="module" src="static/js/main.js" defer></script>
-    <script type="module" src="static/js/tic-tac-toe.js" defer></script>
+    <script type="module" src="static/js/main.js"></script>
+    <script type="module" src="static/js/tic-tac-toe.js"></script>
 </head>
 
 <body>
@@ -29,11 +30,11 @@
 
             <div class="settings-row">
                 <div class="player-settings">
-                    <img src="static/icons/person.svg">
+                    <i class="bi bi-person-fill"></i>
                     <p>1P</p>
                 </div>
                 <div class="volume-settings">
-                    <img src="static/icons/volume_up.svg">
+                    <i class="bi bi-volume-up-fill"></i>
                 </div>
             </div>
 
@@ -67,13 +68,14 @@
             </div>
 
             <div class="announce-card">
-                <button class="btn-close">Close</button>
-                <h2 class="announce-heading"></h2>
-                <p class="announce-text"></p>
-                <button class="btn-play-again">Play Again?</button>
+                <button class="btn btn-close">X</button>
+                <div class="announce-info">
+                    <h2 class="announce-heading"></h2>
+                    <p class="announce-text"></p>
+                    <button class="btn btn-play-again">Play Again?</button>
+                </div>
             </div>
 
-            <p id="announce-winner"></p>
         </div>
     </main>
 

@@ -1,18 +1,21 @@
 @import "main.css";
 
-
-p {
-    color: var(--subtext-1);
+.main-container {
+    position: relative;
 }
 
 .settings-row {
     width: 55vmin;
     height: auto;
-
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
+}
+
+.settings-row .bi {
+    font-size: 1.8rem;
+    color: var(--subtext-0);
 }
 
 .player-settings {
@@ -25,28 +28,44 @@ p {
     font-size: 0.9rem;
 }
 
+.player-settings:hover {
+    cursor: pointer;
+}
+
+.volume-settings:hover {
+    cursor: pointer;
+}
+
 .game-board {
     height: 60vmin;
     width: 60vmin;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5vmin;
-    justify-content: center;
+    display: grid;
+    grid-row: auto;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
 .box {
-    height: 18vmin;
-    width: 18vmin;
-    border-radius: 1rem;
-    border: none;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
+    height: 20vmin;
+    width: 20vmin;
+    border-style: none;
+    border-right: 0.5rem solid var(--lavender);
+    border-bottom: 0.5rem solid var(--lavender);
     font-size: 8vmin;
-    color: var(--mantle);
-    background-color: var(--yellow);
+    color: var(--text);
+    background-color: var(--base);
+}
+
+.box:nth-child(3n) {
+    border-right: none;
+}
+
+.box:nth-child(6) ~ .box {
+    border-bottom: none;
 }
 
 .box:hover {
-    background-color: var(--green);
+    background-color: var(--surface-2);
 }
 
 .results-board {
@@ -73,16 +92,15 @@ p {
 
 .announce-card {
     width: 40%;
-    height: auto;
+    height: 30%;
     opacity: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: absolute;
+    border-radius: 5px;
+    top: 30%;
+    left: 30%;
     transition: all 0.3s ease-in-out;
     z-index: -1;
-    background-color: var(--overlay-1);
+    background-color: var(--surface-0);
 
     display: flex;
     flex-direction: row;
@@ -93,4 +111,39 @@ p {
 .announce-card.show {
     opacity: 1;
     z-index: 999;
+}
+
+.btn {
+    padding: 0.5rem;
+    color: var(--mantle);
+    background-color: var(--lavender);
+    border-style: none;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    cursor: pointer;
+}
+
+.btn.btn-close:hover {
+    background-color: var(--red);
+}
+
+.btn.btn-play-again:hover {
+    background-color: var(--green);
+}
+
+.btn-close {
+    margin: 0.3rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.announce-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
 }
