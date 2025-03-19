@@ -25,7 +25,6 @@
         <div class="title-container">
             <div class="title">
                 <h1>Tic Tac Toe</h1>
-                <p>Welcome</p>
             </div>
 
             <div class="settings-row">
@@ -40,15 +39,15 @@
 
             <div class="container">
                 <div class="game-board">
-                    <button class="box" value="0"></button>
-                    <button class="box" value="1"></button>
-                    <button class="box" value="2"></button>
-                    <button class="box" value="3"></button>
-                    <button class="box" value="4"></button>
-                    <button class="box" value="5"></button>
-                    <button class="box" value="6"></button>
-                    <button class="box" value="7"></button>
-                    <button class="box" value="8"></button>
+                    <button class="box" value="0"><span class="box-text"></span></button>
+                    <button class="box" value="1"><span class="box-text"></span></button>
+                    <button class="box" value="2"><span class="box-text"></span></button>
+                    <button class="box" value="3"><span class="box-text"></span></button>
+                    <button class="box" value="4"><span class="box-text"></span></button>
+                    <button class="box" value="5"><span class="box-text"></span></button>
+                    <button class="box" value="6"><span class="box-text"></span></button>
+                    <button class="box" value="7"><span class="box-text"></span></button>
+                    <button class="box" value="8"><span class="box-text"></span></button>
                 </div>
             </div>
 
@@ -67,14 +66,15 @@
                 </div>
             </div>
 
-            <div class="announce-card">
+            <!-- <div class="announce-card"> -->
+            <dialog class="announce-card">
                 <button class="btn btn-close">X</button>
                 <div class="announce-info">
                     <h2 class="announce-heading"></h2>
                     <p class="announce-text"></p>
                     <button class="btn btn-play-again">Play Again?</button>
                 </div>
-            </div>
+            </dialog>
 
         </div>
     </main>

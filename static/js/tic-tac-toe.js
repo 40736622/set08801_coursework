@@ -2,30 +2,33 @@ import { playAudio, toggleMute } from "./main.js";
 
 // DOM Elements
 const boardBtns = document.querySelectorAll(".box");
-const announceCard = document.querySelector(".announce-card");
-const closeAnnounceCardBtn = announceCard.querySelector(".btn-close");
-const playAgainBtn = announceCard.querySelector(".btn-play-again");
+const dialog = document.querySelector("dialog");
+const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
+const dialogCloseBtn = dialog.querySelector(".btn-close");
+const playerSettings = document.querySelector(".player-settings");
 const volumeIcon = document.querySelector(".volume-settings i");
 const playerXWinsText = document.querySelector("#player-x-score");
 const playerOWinsText = document.querySelector("#player-o-score");
 const tiesText = document.querySelector("#tie-score");
 
-
 // Game State
 const soundPath = "static/audio/collect-ring.mp3";
 let isMute = false;
-let playerXWins = 0, playerOWins = 0, computerOWins = 0, ties = 0;
+let playerXWins = 0, playerOWins = 0, ties = 0;
 let xMoves = [], oMoves = [];
 let turnO = false;
-let computerPlaying = false;
+let computerPlaying = true;
 
 // TODO: ✅ Add Visual and Audio cues
 //       ✅ Add localStorage functionality
 //       ✅ Structure code better
 //       ✅ Add X, O and Tie counters
-//       - Add slash/blinking for the winning combination * The blinking seems easier
+//       ✅ Add blinking for the winning combination
+//       ✅ Change popup to a dialog in html and javascript
 //       ✅ Add reset game functionality
 //       ✅ Add code comments
+//       - Fix HTML page to have proper HTML Semantics
+//       - Fix box blinking only make it trigger for the button text (probably need to add a span element for each button).
 
 // All the possible winnning combinations for Tic-Tac-Toe based on button values
 const winningCombinations = [
@@ -46,6 +49,27 @@ function toggleVolume() {
     isMute = !isMute;
     volumeIcon.classList.remove(isMute ? "bi-volume-up-fill" : "bi-volume-mute-fill");
     volumeIcon.classList.add(isMute ? "bi-volume-mute-fill" : "bi-volume-up-fill");
+}
+
+/**
+ * Toggles between 1 player and 2 players.
+ */
+function toggleComputerPlaying() {
+    const playerIcon = playerSettings.querySelector("i");
+    const playerCount = playerSettings.querySelector("p");
+    resetGame();
+
+    if (computerPlaying) {
+        playerIcon.classList.remove("bi-person-fill");
+        playerIcon.classList.add("bi-people-fill");
+        playerCount.textContent = "2P";
+        computerPlaying = false;
+    } else {
+        playerIcon.classList.remove("bi-people-fill");
+        playerIcon.classList.add("bi-person-fill");
+        playerCount.textContent = "1P";
+        computerPlaying = true;
+    }
 }
 
 /**
@@ -84,13 +108,16 @@ function disableButtons() {
  */
 function checkWinner(playerMoves, winningCombinations) {
     let hasWon = false;
+    let winningMoves
     for (const combination of winningCombinations) {
         if (combination.every((move) => playerMoves.includes(move))) {
             hasWon = true;
+            winningMoves = combination;
             break;
         }
     }
-    return hasWon;
+
+    return [hasWon, winningMoves];
 }
 
 /**
@@ -99,9 +126,8 @@ function checkWinner(playerMoves, winningCombinations) {
  * @param {boolean} oWon - Holds the win state of player O, either true or false.
  */
 function announceWinner(xWon, oWon) {
-    const announceHeading = announceCard.querySelector(".announce-heading");
-    const announceText = announceCard.querySelector(".announce-text");
-    announceCard.classList.add("show");
+    const announceHeading = dialog.querySelector(".announce-heading");
+    const announceText = dialog.querySelector(".announce-text");
 
     if (xWon) {
         announceHeading.textContent = "Congratulations!";
@@ -116,6 +142,10 @@ function announceWinner(xWon, oWon) {
 
     resultCounter(xWon, oWon);
     setTicTacToeLocalStorage(playerXWins, playerOWins, ties);
+
+    setTimeout(() => {
+        dialog.showModal(); // Open dialog
+    }, 750); 
 }
 
 /**
@@ -137,22 +167,39 @@ function resultCounter(xWon, oWon) {
 }
 
 /**
+ * Triggers blinking animation based on win state (player X or O win, tie).
+ * @param {NodeListOf<HTMLButtonElement>} boardBoxes - Board buttons
+ */
+function triggerBoxBlinking(boardBoxes) {
+    boardBoxes.forEach((box) => {
+        box.classList.add("blinking-move");
+    });
+
+    setTimeout(() => {
+        boardBoxes.forEach((box) => {
+            box.classList.remove("blinking-move");
+        });
+    }, 500);
+}
+
+/**
  * Handles board button clicks after a player has made a move.
  * @param {HTMLButtonElement} btn 
  */
 function handleMoves(btn) {
-    let btnValue = Number(btn.value); // Converting button value from a string to a number
+    const btnValue = Number(btn.value); // Converting button value to a number
     let xWon, oWon;
+    let winningMoves;
 
     if (!turnO) {
         btn.textContent = 'X';
         xMoves.push(btnValue);
-        xWon = checkWinner(xMoves, winningCombinations);
+        [xWon, winningMoves] = checkWinner(xMoves, winningCombinations);
         turnO = true;
     } else {
         btn.textContent = 'O';
         oMoves.push(btnValue);
-        oWon = checkWinner(oMoves, winningCombinations);
+        [oWon, winningMoves] = checkWinner(oMoves, winningCombinations);
         turnO = false;
     }
 
@@ -160,22 +207,31 @@ function handleMoves(btn) {
     playAudio(soundPath, isMute);
 
     if (xWon || oWon) {
-        announceWinner(xWon, oWon);
         disableButtons();
+        const winningBoxes = winningMoves.map(index => boardBtns[index]);
+        triggerBoxBlinking(winningBoxes);
+        announceWinner(xWon, oWon);
     } else if (isBoardFull() && !xWon && !oWon) {
+        triggerBoxBlinking(boardBtns);
         announceWinner(false, false);
+    }
+
+    if (computerPlaying && turnO) {
+        setTimeout(() => {
+            triggerComputerMove();
+        }, 300);
     }
 }
 
 /**
- * Resets the Tic-Tac-Toe board to it's beginning state in order to start a new game.
+ * Resets the Tic-Tac-Toe board to it's beginning state to start a new game.
  */
 function resetGame() {
     xMoves = [];
     oMoves = [];
     turnO = false;
 
-    announceCard.classList.remove("show");
+    dialog.close();
     enableButtons();
 }
 
@@ -206,29 +262,39 @@ function removeTicTacToeLocalStorage() {
 }
 
 /**
- * Updates all score variables and DOM displays by fetching the data from Local Storage.
+ * Updates all score variables and displays them by fetching the data from Local Storage.
  */
 function updateScores() {
     const scores = getTicTacToeLocalStorage();
 
     if (scores) {
-        playerXWins = scores["playerXWins"];
-        playerOWins = scores["playerOWins"];
-        ties = scores["ties"];
-    
+        playerXWins = scores.playerXWins;
+        playerOWins = scores.playerOWins;
+        ties = scores.ties;
+
         playerXWinsText.textContent = playerXWins;
         playerOWinsText.textContent = playerOWins;
         tiesText.textContent = ties;
     }
 }
 
-// TODO: Use Math.Random to emulate a fake AI
-function computerPlays() {
-    return;
+/**
+ * Simulates a random button click for the computer's move.
+ */
+function triggerComputerMove() {
+    const allMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    const playedMoves = [...xMoves, ...oMoves];
+    const remainingMoves = allMoves.filter((move) => !playedMoves.includes(move));
+
+    if (remainingMoves.length === 0) return false;
+
+    const computerMove = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+    boardBtns[computerMove].click();
 }
 
 updateScores();
 boardBtns.forEach((btn) => btn.addEventListener("click", () => handleMoves(btn)));
+playerSettings.addEventListener("click", toggleComputerPlaying);
 volumeIcon.addEventListener("click", toggleVolume);
-playAgainBtn.addEventListener("click", resetGame);
-closeAnnounceCardBtn.addEventListener("click", () => announceCard.classList.remove("show"));
+diaglogPlayAgainBtn.addEventListener("click", resetGame); // Close dialog and start a new game
+dialogCloseBtn.addEventListener("click", () => dialog.close()); // Close dialog
