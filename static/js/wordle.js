@@ -16,8 +16,7 @@ const boxColors = {
 
 // Game State
 const MAX_ATTEMPTS = 6;
-let currentAttempt = 1, dailyStreak = 0;
-let secretWord = "", currentGuess = "";
+let currentBoxIndex = 0;
 
 let gameState = {
     status: "in_progress",
@@ -51,49 +50,49 @@ function getActiveBoxes() {
 }
 
 let activeBoxes = getActiveBoxes();
-let currentIndex = 0;
 
 /* ------------------ Game Logic -----------------------*/
 // TODO: - Recheck logic and make it look better
 //       - Add a check to see if the guess word is too short to be submitted.
 function submitGuessWord() {
-    activeBoxes.forEach((box) => currentGuess += box.textContent.toLowerCase());
+    activeBoxes.forEach((box) => gameState.currentGuess += box.textContent.toLowerCase());
 
-    // if (currentGuess.length < 5) {
-    //     alert("Word is too short!");
-    //     currentGuess = "";
-    // }
+    if (gameState.currentGuess.length < 5) {
+        alert("Word is too short!");
+        gameState.currentGuess = "";
+        return;
+    }
 
-    // if (!wordleList.includes(currentGuess)) {
+    // if (!wordleList.includes(gameState.currentGuess)) {
     //     alert("Word doesn't exist within the list!");
+    //     return;
     // }
 
-    if (checkGuessWord(secretWord, currentGuess)) {
-        checkLetters(secretWord, currentGuess);
-        announceResult.textContent = "Congratulation, you won.";
+    gameState.guesses.push(gameState.currentGuess);
+    checkLetters();
+
+    if (checkGuessWord()) {
+        stopInput();
+        gameState.status = "won";
+        gameState.lastStreakRecorded = new Date().getDate();
         incrementDailyStreak();
-        //console.log("Right");
+        announceResult.textContent = "Congratulation, you won.";
     } else {
-        //console.log("Wrong");
-
-        if (currentAttempt < 6) {
-            checkLetters(secretWord, currentGuess);
-
-            currentAttempt++;
+        if (gameState.currentAttempt < 6) {
+            gameState.currentAttempt++;
 
             activeRow.classList.remove("row-active");
-            activeRow = row[currentAttempt - 1];
+            activeRow = row[gameState.currentAttempt - 1];
             activeRow.classList.add("row-active");
-
             activeBoxes = getActiveBoxes();
 
             // Reset row index traversal and current guess word
-            currentIndex = 0;
-            currentGuess = "";
+            currentBoxIndex = 0;
+            gameState.currentGuess = "";
         } else {
-            checkLetters(secretWord, currentGuess);
-            announceResult.textContent = `Sorry, you lost. The word was ${secretWord}.`;
-            //console.log("Game Over!");
+            stopInput();
+            gameState.status = "lost";
+            announceResult.textContent = `Sorry, you lost. The word was ${gameState.secretWord}.`;
         }
     }
 }
@@ -102,10 +101,39 @@ function submitGuessWord() {
  * Clears the text for each active box.
  */
 function deleteLetter() {
-    if (currentIndex > 0) {
-        currentIndex--;
-        activeBoxes[currentIndex].textContent = "";
+    if (currentBoxIndex > 0) {
+        currentBoxIndex--;
+        activeBoxes[currentBoxIndex].textContent = "";
     }
+}
+
+/**
+ * Callback function to be used with input event listeners.
+ * @param {KeyboardEvent | MouseEvent} e - Event object from a keydown or click event.
+ */
+const handleInputCallback = (e) => {
+    handleInput(e.key || e.target.textContent);
+}
+
+/**
+ * Start event listeners for keyboard inputs.
+ */
+function startInput() {
+    document.addEventListener("keydown", handleInputCallback);
+    keyboardBtns.forEach((btn) => {
+        btn.addEventListener("click", handleInputCallback);
+    });
+}
+
+/**
+ * Stop event listeners for keyboard inputs.
+ */
+function stopInput() {
+    document.removeEventListener("keydown", handleInputCallback);
+    
+    keyboardBtns.forEach((btn) => {
+        btn.removeEventListener("click", handleInputCallback);
+    });
 }
 
 function handleInput(input) {
@@ -119,37 +147,21 @@ function handleInput(input) {
 
     // Checks if the input is a letter
     if (input.match(/^[a-zA-Z]$/g)) {
-        if (currentIndex < 5) {
-            activeBoxes[currentIndex].textContent = input.toUpperCase();
-            currentIndex++;
+        if (currentBoxIndex < 5) {
+            activeBoxes[currentBoxIndex].textContent = input.toUpperCase();
+            currentBoxIndex++;
         }
     }
 }
 
-// Event listeners.
-document.addEventListener("keydown", (e) => handleInput(e.key));
-keyboardBtns.forEach((btn) => {
-    btn.addEventListener("click", () => handleInput(btn.textContent));
-});
-
-/**
- * Stop web page from listening for keyboard inputs.
- */
-function stopInput() {
-    document.removeEventListener("keydown", (e) => handleInput(e.key));
-    keyboardBtns.forEach((btn) => {
-        btn.removeEventListener("click", () => handleInput(btn.textContent));
-    });
-}
-
-function checkLetters(secretWord, guessWord) {
-    let lettersEvalution = Array(5).fill("");
-    let secretWordLetters = secretWord.split("");
-    let guessWordLetters = guessWord.split("");
+function checkLetters() {
+    let letterEvaluations = Array(5).fill("");
+    let secretWordLetters = gameState.secretWord.split("");
+    let guessWordLetters = gameState.currentGuess.split("");
 
     for (let i = 0; i < guessWordLetters.length; i++) {
         if (guessWordLetters[i] === secretWordLetters[i]) {
-            lettersEvalution[i] = "correct"
+            letterEvaluations[i] = "correct"
             secretWordLetters[i] = "";
             guessWordLetters[i] = "";
         }
@@ -159,24 +171,25 @@ function checkLetters(secretWord, guessWord) {
         if (!guessWordLetters[i]) continue;
         const index = secretWordLetters.indexOf(guessWordLetters[i]);
         if (index !== -1) {
-            lettersEvalution[i] = "misplaced";
+            letterEvaluations[i] = "misplaced";
             secretWordLetters[index] = ""
         }
     }
 
-    lettersEvalution.forEach((element, index) => {
+    letterEvaluations.forEach((element, index) => {
         if (element === "") {
-            lettersEvalution[index] = "incorrect";
+            letterEvaluations[index] = "incorrect";
         }
     });
 
-    // gameState.letterEvaluations.push(lettersEvalution);
-    changeBoxColor(lettersEvalution);
-
-    //return lettersEvalution;
+    gameState.letterEvaluations.push(letterEvaluations);
+    changeBoxColor(letterEvaluations);
 }
 
-// TODO: - Recheck logic
+/**
+ * Changes colors for each active row box depending on letter evaluations
+ * @param {Array} lettersEvalution Holds evaluations for each letter of the current guess word.
+ */
 function changeBoxColor(lettersEvalution) {
     for (let i = 0; i < lettersEvalution.length; i++) {
         if (lettersEvalution[i] === "correct") {
@@ -190,18 +203,25 @@ function changeBoxColor(lettersEvalution) {
 }
 
 /**
- * 
+ * Checks if current guess and secret word are the same.
  * @returns {boolean} Result if current guess matches the secret wordle word.
  */
-function checkGuessWord(secretWord, currentGuess) {
-    return currentGuess === secretWord;
+function checkGuessWord() {
+    return gameState.currentGuess === gameState.secretWord;
 }
 
+/**
+ * Increments daily streak and updates the text display.
+ */
 function incrementDailyStreak() {
     gameState.dailyStreak++;
     dailyStreakText.textContent = gameState.dailyStreak;
 }
 
+/**
+ * Fetches local JSON file with Wordle word list.
+ * @returns JSON response of Wordle word list.
+ */
 async function getWordleWords() {
     const jsonUrl = "http://127.0.0.1:5500/static/wordle.json"
     try {
@@ -217,28 +237,24 @@ async function getWordleWords() {
     }
 }
 
-function getRandomWord(words) {
-    if (Array.isArray(words)) {
+async function getRandomWord() {
+    words = await getWordleWords();
+
+    if (words.length > 0) {
         return words[Math.floor(Math.random() * words.length)];
     }
 }
 
 // TODO: - Add all came functionality here or at least most
 async function startWordleGame() {
-    const wordleList = await getWordleWords();
-
-    secretWord = getRandomWord(wordleList);
-    console.log(secretWord);
-
-    // gameState.secretWord = getRandomWord(wordleList);
-    // console.log(gameState.secretWord);
+    gameState.secretWord = await getRandomWord();
+    console.log(gameState.secretWord);
 }
 
 // TODO: - Add reset wordle game logic
 async function resetWordleGame() {
-    const wordleList = await getWordleWords();
-    gameState.secretWord = await getRandomWord(wordleList);
-    gameState.status = "in_prgress";
+    gameState.secretWord = await getRandomWord();
+    gameState.status = "in_progress";
     gameState.currentGuess = "";
     gameState.currentAttempt = 1;
     gameState.guesses = [];
@@ -253,9 +269,8 @@ async function resetWordleGame() {
 
 }
 
-function setWordleLocalStorage(gameState) {
-    const wordleGameProgress = JSON.stringify(gameState);
-    localStorage.setItem("wordle", wordleGameProgress);
+function setWordleLocalStorage() {
+    localStorage.setItem("wordle", JSON.stringify(gameState));
 }
 
 function getWordleLocalStorage() {
@@ -272,3 +287,5 @@ function resetDailyStreak() {
 }
 
 startWordleGame();
+startInput();
+
