@@ -28,7 +28,7 @@ let computerPlaying = true;
 //       ✅ Add reset game functionality
 //       ✅ Add code comments
 //       - Fix HTML page to have proper HTML Semantics
-//       - Fix box blinking only make it trigger for the button text (probably need to add a span element for each button).
+//       - Fix box blinking, only make it trigger for the button text (probably need to add a span element for each button).
 
 // All the possible winnning combinations for Tic-Tac-Toe based on button values
 const winningCombinations = [
@@ -52,7 +52,7 @@ function toggleVolume() {
 }
 
 /**
- * Toggles between 1 player and 2 players.
+ * Toggles between 1 or 2 player mode.
  */
 function toggleComputerPlaying() {
     const playerIcon = playerSettings.querySelector("i");
@@ -140,7 +140,7 @@ function announceWinner(xWon, oWon) {
         announceText.textContent = "It's a tie.";
     }
 
-    resultCounter(xWon, oWon);
+    scoreCounter(xWon, oWon);
     setTicTacToeLocalStorage(playerXWins, playerOWins, ties);
 
     setTimeout(() => {
@@ -153,15 +153,15 @@ function announceWinner(xWon, oWon) {
  * @param {boolean} xWon - Holds the win state of player X, either true or false.
  * @param {boolean} oWon - Holds the win state of player O, either true or false.
  */
-function resultCounter(xWon, oWon) {
+function scoreCounter(xWon, oWon) {
     if (xWon) {
-        playerXWins += 1;
+        playerXWins++;
         playerXWinsText.textContent = playerXWins;
     } else if (oWon) {
-        playerOWins += 1;
+        playerOWins++;
         playerOWinsText.textContent = playerOWins;
     } else {
-        ties += 1;
+        ties++;
         tiesText.textContent = ties;
     }
 }
@@ -216,7 +216,7 @@ function handleMoves(btn) {
         announceWinner(false, false);
     }
 
-    if (computerPlaying && turnO) {
+    if (computerPlaying && turnO && !xWon && !oWon) {
         setTimeout(() => {
             triggerComputerMove();
         }, 300);
@@ -224,7 +224,7 @@ function handleMoves(btn) {
 }
 
 /**
- * Resets the Tic-Tac-Toe board to it's beginning state to start a new game.
+ * Clears the game board to start a new game.
  */
 function resetGame() {
     xMoves = [];
@@ -242,8 +242,8 @@ function resetGame() {
  * @param {Number} ties  - Represents the total number of ties.
  */
 function setTicTacToeLocalStorage(xWins, oWins, ties) {
-    const ticTacToeScores = JSON.stringify({ "playerXWins": xWins, "playerOWins": oWins, "ties": ties });
-    localStorage.setItem("ticTacToe", ticTacToeScores);
+    const scores = JSON.stringify({ "playerXWins": xWins, "playerOWins": oWins, "ties": ties });
+    localStorage.setItem("ticTacToe", scores);
 }
 
 /**
@@ -255,7 +255,7 @@ function getTicTacToeLocalStorage() {
 }
 
 /**
- * Deletes all Tic-Tac-Toe scores from Local Storage.
+ * Deletes all Tic-Tac-Toe scores from Local Storage. Mostly used for debugging.
  */
 function removeTicTacToeLocalStorage() {
     localStorage.removeItem("ticTacToe");
@@ -286,12 +286,13 @@ function triggerComputerMove() {
     const playedMoves = [...xMoves, ...oMoves];
     const remainingMoves = allMoves.filter((move) => !playedMoves.includes(move));
 
-    if (remainingMoves.length === 0) return false;
+    if (remainingMoves.length === 0) return;
 
-    const computerMove = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+    const computerMove = remainingMoves[Math.floor(Math.random() * remainingMoves.length)]; // Select a random move
     boardBtns[computerMove].click();
 }
 
+// removeTicTacToeLocalStorage();
 updateScores();
 boardBtns.forEach((btn) => btn.addEventListener("click", () => handleMoves(btn)));
 playerSettings.addEventListener("click", toggleComputerPlaying);
