@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
     <title>Wordle Clone</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="static/css/main.css" rel="stylesheet" type="text/css">
     <link href="static/css/wordle.css" rel="stylesheet" type="text/css">
     <script src="static/js/wordle.js" defer></script>
@@ -24,6 +25,15 @@
             <div class="title">
                 <h1>Wordle Clone</h1>
                 <p id="announce-result"></p>
+            </div>
+
+            <div class="settings-row">
+                <div>
+                    <p>Daily Streak: <span id="daily-streak">0</span></p>
+                </div>
+                <div class="volume-settings">
+                    <i class="bi bi-volume-up-fill"></i>
+                </div>
             </div>
 
             <div class="wordle-board">

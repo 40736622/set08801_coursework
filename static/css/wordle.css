@@ -1,5 +1,19 @@
 @import "main.css";
 
+.settings-row {
+    width: 24rem;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.settings-row .bi {
+    font-size: 1.8rem;
+    color: var(--subtext-0);
+}
+
 .wordle-board {
     display: grid;
     gap: 1rem;
@@ -63,6 +77,10 @@
     background-color: var(--overlay-2);
 }
 
+.delete-btn {
+    padding: 0 1.5rem;
+}
+
 .enter-btn {
-    width: 2.5rem;
+    padding: 0 1.8rem;
 }

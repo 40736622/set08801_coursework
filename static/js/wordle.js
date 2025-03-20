@@ -1,39 +1,51 @@
+// DOM Elements
 const announceResult = document.getElementById("announce-result");
 const keyboardBtns = document.querySelectorAll(".btn");
-
-const correctLetterColor = "#a6e3a1";
-const incorrectLetterColor = "#585b70";
-const misplacedLetterColor = "#f9e2af";
-
 const row = document.querySelectorAll(".row");
 let activeRow = document.querySelector(".row-active");
+const dailyStreakText = document.querySelector("#daily-streak");
+const audioIcon = document.querySelector(".volume-settings i")
 
+// Board Colors
+const boxColors = {
+    default: "#e6e9ef",
+    correct: "#a6e3a1",
+    incorrect: "#585b70",
+    misplaced: "#f9e2af"
+};
+
+// Game State
 const MAX_ATTEMPTS = 6;
-let currentAttempt = 1;
+let currentAttempt = 1, dailyStreak = 0;
 let secretWord = "", currentGuess = "";
 
-// let gameProgress = {
-//     secretWord,
-//     MAX_ATTEMPTS,
-//     gameState, // in_progress, won, lost
-//     currentGuess,
-//     currentAttempt,
-//     activeRow, // Cross check this
-//     guesses,
-//     letterEvaluations,
-//     dailyStreak
-// }
+let gameState = {
+    status: "in_progress",
+    secretWord: "",
+    currentGuess: "",
+    currentAttempt: 1,
+    guesses: [],
+    letterEvaluations: [],
+    dailyStreak: 0,
+    lastStreakRecorded: ""
+};
 
 // BUG: - When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
 //      ✅ Yellow highlight for misplaced letter is also registering if guess word has multiple correct guess letters.
 
 // TODO: ✅ Make the keyboard on the website work 
+//       - Change keyboard section back into button tags instead of divs
+//       - Recheck if I have HTML semantics set properly
 //       - Add play again functionality (reset board and choose another secret word)
-//       - Add streak and progress tracker and date streak refresh
-//       - Also make the trackers work with localStorage
+//       - Add streak and date refresh
+//       - Also make the streak work with localStorage
 //       - Add audio functionality
 //       - Add code comments
 
+/**
+ * Get all boxes from the active row.
+ * @returns Node list of divs with css box class.
+ */
 function getActiveBoxes() {
     return activeRow.querySelectorAll(".box");
 }
@@ -42,52 +54,10 @@ let activeBoxes = getActiveBoxes();
 let currentIndex = 0;
 
 /* ------------------ Game Logic -----------------------*/
-keyboardBtns.forEach((button) => {
-    button.addEventListener("click", (e) => {
-        console.log(e.target.textContent.trim());
-
-        if (e.target.textContent.trim() === "Enter") {
-            submitGuessWord();
-        }
-
-        if (e.target.textContent.trim() === "Del") {
-            deleteLetter();
-        }
-
-        if (e.target.textContent.trim().match(/^[a-zA-Z]$/g)) {
-            if (currentIndex < 5) {
-                activeBoxes[currentIndex].textContent = e.target.textContent.trim().toUpperCase();
-                currentIndex++;
-            }
-        }
-    });
-});
-
-document.addEventListener("keydown", keyPressed);
-
-// TODO: - Make it more efficient
-function keyPressed(event) {
-    if (event.key === "Enter") {
-        submitGuessWord();
-    }
-
-    if (event.key === "Backspace") {
-        deleteLetter();
-    }
-
-    // Checks if key press is a letter
-    if (event.key.match(/^[a-zA-Z]$/g)) {
-        if (currentIndex < 5) {
-            activeBoxes[currentIndex].textContent = event.key.toUpperCase();
-            currentIndex++;
-        }
-    }
-}
-
 // TODO: - Recheck logic and make it look better
 //       - Add a check to see if the guess word is too short to be submitted.
 function submitGuessWord() {
-    activeBoxes.forEach(box => currentGuess += box.textContent.toLowerCase());
+    activeBoxes.forEach((box) => currentGuess += box.textContent.toLowerCase());
 
     // if (currentGuess.length < 5) {
     //     alert("Word is too short!");
@@ -98,9 +68,10 @@ function submitGuessWord() {
     //     alert("Word doesn't exist within the list!");
     // }
 
-    if (checkWord(currentGuess, secretWord)) {
-        checkLetters(secretWord, currentGuess)
+    if (checkGuessWord(secretWord, currentGuess)) {
+        checkLetters(secretWord, currentGuess);
         announceResult.textContent = "Congratulation, you won.";
+        incrementDailyStreak();
         //console.log("Right");
     } else {
         //console.log("Wrong");
@@ -127,7 +98,9 @@ function submitGuessWord() {
     }
 }
 
-// Some of the logic is already in keyPressed
+/**
+ * Clears the text for each active box.
+ */
 function deleteLetter() {
     if (currentIndex > 0) {
         currentIndex--;
@@ -135,10 +108,40 @@ function deleteLetter() {
     }
 }
 
-// Bug: - Misplaced letters logic needs to be fixed
-// Ideas: - Try a two loop approach instead
-//        - First loop to check for all the correct letters
-//        - Second loop to check the remaining misplaced letters
+function handleInput(input) {
+    if (input === "Enter") {
+        submitGuessWord();
+    }
+
+    if (input === "Backspace" || input === "Del") {
+        deleteLetter();
+    }
+
+    // Checks if the input is a letter
+    if (input.match(/^[a-zA-Z]$/g)) {
+        if (currentIndex < 5) {
+            activeBoxes[currentIndex].textContent = input.toUpperCase();
+            currentIndex++;
+        }
+    }
+}
+
+// Event listeners.
+document.addEventListener("keydown", (e) => handleInput(e.key));
+keyboardBtns.forEach((btn) => {
+    btn.addEventListener("click", () => handleInput(btn.textContent));
+});
+
+/**
+ * Stop web page from listening for keyboard inputs.
+ */
+function stopInput() {
+    document.removeEventListener("keydown", (e) => handleInput(e.key));
+    keyboardBtns.forEach((btn) => {
+        btn.removeEventListener("click", () => handleInput(btn.textContent));
+    });
+}
+
 function checkLetters(secretWord, guessWord) {
     let lettersEvalution = Array(5).fill("");
     let secretWordLetters = secretWord.split("");
@@ -167,27 +170,36 @@ function checkLetters(secretWord, guessWord) {
         }
     });
 
-    changeLetterColor(lettersEvalution);
+    // gameState.letterEvaluations.push(lettersEvalution);
+    changeBoxColor(lettersEvalution);
 
     //return lettersEvalution;
 }
 
 // TODO: - Recheck logic
-function changeLetterColor(lettersEvalution) {
+function changeBoxColor(lettersEvalution) {
     for (let i = 0; i < lettersEvalution.length; i++) {
         if (lettersEvalution[i] === "correct") {
-            activeBoxes[i].style.backgroundColor = correctLetterColor;
+            activeBoxes[i].style.backgroundColor = boxColors.correct;
         } else if (lettersEvalution[i] === "misplaced") {
-            activeBoxes[i].style.backgroundColor = misplacedLetterColor;
+            activeBoxes[i].style.backgroundColor = boxColors.misplaced;
         } else {
-            activeBoxes[i].style.backgroundColor = incorrectLetterColor;
+            activeBoxes[i].style.backgroundColor = boxColors.incorrect;
         }
     }
 }
 
-// TODO: - Recheck logic
-function checkWord(guessWord, wordleWord) {
-    return guessWord === wordleWord;
+/**
+ * 
+ * @returns {boolean} Result if current guess matches the secret wordle word.
+ */
+function checkGuessWord(secretWord, currentGuess) {
+    return currentGuess === secretWord;
+}
+
+function incrementDailyStreak() {
+    gameState.dailyStreak++;
+    dailyStreakText.textContent = gameState.dailyStreak;
 }
 
 async function getWordleWords() {
@@ -217,10 +229,45 @@ async function startWordleGame() {
 
     secretWord = getRandomWord(wordleList);
     console.log(secretWord);
+
+    // gameState.secretWord = getRandomWord(wordleList);
+    // console.log(gameState.secretWord);
 }
 
 // TODO: - Add reset wordle game logic
 async function resetWordleGame() {
+    const wordleList = await getWordleWords();
+    gameState.secretWord = await getRandomWord(wordleList);
+    gameState.status = "in_prgress";
+    gameState.currentGuess = "";
+    gameState.currentAttempt = 1;
+    gameState.guesses = [];
+    gameState.letterEvaluations = [];
+
+    // Clear game board text
+    const boxes = document.querySelectorAll(".box");
+    boxes.forEach((box) => {
+        box.textContent = "";
+        box.style.backgroundColor = boxColors.default;
+    });
+
+}
+
+function setWordleLocalStorage(gameState) {
+    const wordleGameProgress = JSON.stringify(gameState);
+    localStorage.setItem("wordle", wordleGameProgress);
+}
+
+function getWordleLocalStorage() {
+    return JSON.parse(localStorage.getItem("wordle"));
+}
+
+function removeWordleLocalStorage() {
+    localStorage.removeItem("wordle");
+}
+
+// Ideas - If new Date().getDate() !== same, then reset the streak.
+function resetDailyStreak() {
     return;
 }
 
