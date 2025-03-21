@@ -84,3 +84,62 @@
 .enter-btn {
     padding: 0 1.8rem;
 }
+
+/*Dialog*/
+dialog:open {
+    width: 40%;
+    height: 30%;
+    border-radius: 15px;
+    top: 30%;
+    left: 30%;
+    background-color: var(--surface-0);
+    border-style: none;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+dialog::backdrop {
+    background-color: #fff5;
+    backdrop-filter: blur(4px);
+}
+
+.abtn {
+    padding: 0.5rem;
+    color: var(--mantle);
+    background-color: var(--lavender);
+    border-style: none;
+    border-radius: 5px;
+}
+
+.abtn:hover {
+    cursor: pointer;
+}
+
+.abtn.btn-close:hover {
+    background-color: var(--red);
+}
+
+.abtn.btn-play-again:hover {
+    background-color: var(--green);
+}
+
+.btn-close {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.3rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 200px;
+}
+
+.announce-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+}
