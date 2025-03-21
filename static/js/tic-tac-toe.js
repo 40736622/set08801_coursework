@@ -268,9 +268,9 @@ function updateScores() {
     const scores = getTicTacToeLocalStorage();
 
     if (scores) {
-        playerXWins = scores.playerXWins;
-        playerOWins = scores.playerOWins;
-        ties = scores.ties;
+        playerXWins = scores.playerXWins ?? 0;
+        playerOWins = scores.playerOWins ?? 0;
+        ties = scores.ties ?? 0;
 
         playerXWinsText.textContent = playerXWins;
         playerOWinsText.textContent = playerOWins;
