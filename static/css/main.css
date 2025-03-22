@@ -192,7 +192,7 @@ main {
 }
 
 .card a:hover {
-    color: var(--lavender);
+    color: var(--white);
 }
 
 .card:hover .icon {

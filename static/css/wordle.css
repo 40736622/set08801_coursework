@@ -143,3 +143,19 @@ dialog::backdrop {
     align-items: center;
     gap: 0.8rem;
 }
+
+@keyframes flipping {
+    0% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(0);
+    }
+    100% {
+        transform: scaleY(1);
+    }
+}
+
+.box-flipping {
+    animation: flipping 1s 1;
+}

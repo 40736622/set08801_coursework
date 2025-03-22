@@ -12,7 +12,7 @@ const playerOWinsText = document.querySelector("#player-o-score");
 const tiesText = document.querySelector("#tie-score");
 
 // Game State
-const soundPath = "static/audio/collect-ring.mp3";
+const soundPath = "../static/audio/collect-ring.mp3";
 let isMute = false;
 let playerXWins = 0, playerOWins = 0, ties = 0;
 let xMoves = [], oMoves = [];

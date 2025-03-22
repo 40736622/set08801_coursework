@@ -35,7 +35,7 @@ let gameState = {
 
 // TODO: ✅ Make the keyboard on the website work 
 //       ✅ Add play again functionality (reset board and choose another secret word)
-//       - Add streak and date refresh
+//       ✅ Add streak and date refresh
 //       ✅ Also make the streak work with localStorage
 //       - Add audio functionality
 //       - Add code comments
@@ -52,6 +52,25 @@ function getActiveBoxes() {
 
 let activeBoxes = getActiveBoxes();
 
+/**
+ * Triggers flipping animation.
+ * @param {NodeListOf<HTMLDivElement>} rowBoxes - Boxes for a single row.
+ */
+function triggerBoxFlipping(rowBoxes) {
+    rowBoxes.forEach((box, index) => {
+        setTimeout(() => {
+            box.classList.add("box-flipping");
+        }, index * 200);
+
+    });
+
+    setTimeout(() => {
+        rowBoxes.forEach((box) => {
+            box.classList.remove("box-flipping");
+        });
+    }, 2000);
+}
+
 function announceResult() {
     const announceHeading = dialog.querySelector(".announce-heading");
     const announceText = dialog.querySelector(".announce-text");
@@ -61,12 +80,12 @@ function announceResult() {
         announceText.textContent = "You got the right word.";
     } else {
         announceHeading.textContent = "Too Bad!";
-        announceText.textContent = `The word was ${gameState.secretWord}.`;
+        announceText.textContent = `The word was ${gameState.secretWord.toUpperCase()}.`;
     }
 
     setTimeout(() => {
         dialog.showModal(); // Open dialog
-    }, 500);
+    }, 2200);
 }
 /* ------------------ Game Logic -----------------------*/
 // TODO: - Recheck logic and make it look better
@@ -80,13 +99,9 @@ function submitGuessWord() {
         return;
     }
 
-    // if (!wordleList.includes(gameState.currentGuess)) {
-    //     alert("Word doesn't exist within the list!");
-    //     return;
-    // }
-
     gameState.guesses.push(gameState.currentGuess);
     checkLetters();
+    triggerBoxFlipping(activeBoxes);
 
     if (checkGuessWord()) {
         stopInput();
@@ -98,13 +113,9 @@ function submitGuessWord() {
         if (gameState.currentAttempt < 6) {
             gameState.currentAttempt++;
 
-            activeRow.classList.remove("row-active");
-            activeRow = rows[gameState.currentAttempt - 1];
-            activeRow.classList.add("row-active");
-            activeBoxes = getActiveBoxes();
+            changeActiveRow();
 
-            // Reset row index traversal and current guess word
-            currentBoxIndex = 0;
+            // Reset current guess word
             gameState.currentGuess = "";
         } else {
             stopInput();
@@ -202,21 +213,21 @@ function checkLetters() {
     });
 
     gameState.letterEvaluations.push(letterEvaluations);
-    changeBoxColor(letterEvaluations);
+    changeBoxColor(letterEvaluations, activeBoxes);
 }
 
 /**
  * Changes colors for each active row box depending on letter evaluations
  * @param {Array} letterEvaluations Holds evaluations for each letter of the current guess word.
  */
-function changeBoxColor(letterEvaluations) {
+function changeBoxColor(letterEvaluations, rowBoxes) {
     for (let i = 0; i < letterEvaluations.length; i++) {
         if (letterEvaluations[i] === "correct") {
-            activeBoxes[i].style.backgroundColor = boxColors.correct;
+            rowBoxes[i].style.backgroundColor = boxColors.correct;
         } else if (letterEvaluations[i] === "misplaced") {
-            activeBoxes[i].style.backgroundColor = boxColors.misplaced;
+            rowBoxes[i].style.backgroundColor = boxColors.misplaced;
         } else {
-            activeBoxes[i].style.backgroundColor = boxColors.incorrect;
+            rowBoxes[i].style.backgroundColor = boxColors.incorrect;
         }
     }
 }
@@ -281,11 +292,7 @@ async function resetWordleGame() {
     gameState.letterEvaluations = [];
 
     // Reset input to start at the first row
-    currentBoxIndex = 0;
-    activeRow.classList.remove("row-active");
-    activeRow = rows[gameState.currentAttempt - 1];
-    activeRow.classList.add("row-active");
-    activeBoxes = getActiveBoxes();
+    changeActiveRow();
 
     // Clear game board text and set default color
     const boxes = document.querySelectorAll(".box");
@@ -311,61 +318,57 @@ function removeWordleLocalStorage() {
 }
 
 function updateDailyStreak() {
-    const wordleGameState = getWordleLocalStorage();
-    if (wordleGameState) {
-        gameState.dailyStreak = wordleGameState.dailyStreak ?? 0;
+    const lastSavedGameState = getWordleLocalStorage();
+    if (lastSavedGameState) {
+        gameState.dailyStreak = lastSavedGameState.dailyStreak ?? 0;
         dailyStreakText.textContent = gameState.dailyStreak;
     }
 }
 
-function checkGameProgress() {
-    let lastSavedGameState = getWordleLocalStorage();
+function changeActiveRow() {
+    currentBoxIndex = 0;
+    activeRow.classList.remove("row-active");
+    activeRow = rows[gameState.currentAttempt - 1];
+    activeRow.classList.add("row-active");
+    activeBoxes = getActiveBoxes();
+}
+
+function restoreGameState() {
+    const lastSavedGameState = getWordleLocalStorage();
 
     if (lastSavedGameState && lastSavedGameState.status === "in_progress" && lastSavedGameState.currentAttempt > 1) {
         gameState = lastSavedGameState;
         console.log(gameState.secretWord);
 
+        resetDailyStreak(lastSavedGameState);
         // Reset input to start at the first row
-        currentBoxIndex = 0;
-        activeRow.classList.remove("row-active");
-        activeRow = rows[gameState.currentAttempt - 1];
-        activeRow.classList.add("row-active");
-        activeBoxes = getActiveBoxes();
+        changeActiveRow();
 
         for (let i = 0; i < gameState.guesses.length; i++) {
             const boxes = rows[i].querySelectorAll(".box");
+            changeBoxColor(gameState.letterEvaluations[i], boxes);
+
             for (let j = 0; j < gameState.guesses[i].length; j++) {
                 boxes[j].textContent = gameState.guesses[i][j].toUpperCase();
-
-                if (gameState.letterEvaluations[i][j] === "correct") {
-                    boxes[j].style.backgroundColor = boxColors.correct;
-                } else if (gameState.letterEvaluations[i][j] === "misplaced") {
-                    boxes[j].style.backgroundColor = boxColors.misplaced;
-                } else {
-                    boxes[j].style.backgroundColor = boxColors.incorrect;
-                }
             }
         }
     } else {
+        resetDailyStreak();
         startWordleGame();
     }
 }
 
-// Ideas - If new Date().getDate() !== same, then reset the streak.
-function resetDailyStreak() {
-    const wordleState = getWordleLocalStorage();
-    if (wordleState.lastDateStreakRecorded !== new Date().getDate()) {
+// Bug: - For some reason it resets an in progress game when the page is revisted.
+function resetDailyStreak(lastSavedGameState = null) {
+    if (lastSavedGameState && lastSavedGameState.lastDateStreakRecorded !== new Date().getDate()) {
         gameState.lastDateStreakRecorded = null;
         gameState.dailyStreak = 0;
         setWordleLocalStorage(gameState);
     }
 }
 
-//removeWordleLocalStorage();
-resetDailyStreak();
-//startWordleGame();
+restoreGameState();
 updateDailyStreak();
-checkGameProgress();
 startInput();
 
 diaglogPlayAgainBtn.addEventListener("click", resetWordleGame); // Close dialog and start a new game
