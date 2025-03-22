@@ -27,7 +27,7 @@ let computerPlaying = true;
 //       ✅ Change popup to a dialog in html and javascript
 //       ✅ Add reset game functionality
 //       ✅ Add code comments
-//       - Fix HTML page to have proper HTML Semantics
+//       ✅ Fix HTML page to have proper HTML Semantics
 //       - Fix box blinking, only make it trigger for the button text (probably need to add a span element for each button).
 
 // All the possible winnning combinations for Tic-Tac-Toe based on button values

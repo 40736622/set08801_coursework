@@ -195,7 +195,7 @@ main {
     color: var(--white);
 }
 
-.card:hover .icon {
+.icon:hover {
     scale: 1.1;
 }
 

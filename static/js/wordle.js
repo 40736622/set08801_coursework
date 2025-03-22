@@ -40,7 +40,7 @@ let gameState = {
 //       - Add audio functionality
 //       - Add code comments
 //       - Change keyboard section back into button tags instead of divs
-//       - Recheck if I have HTML semantics set properly
+//       ✅ Recheck if I have HTML semantics set properly
 
 /**
  * Get all boxes from the active row.
