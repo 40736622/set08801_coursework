@@ -128,7 +128,7 @@ main {
     /* border: 1px solid #fff; */
 }
 
-.title-container {
+.container {
     margin: 1rem;
     display: flex;
     flex-direction: column;
@@ -240,5 +240,3 @@ main {
     mask-size: contain;
     background-color: var(--red);
 }
-
-/* Wordle*/
