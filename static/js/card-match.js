@@ -36,7 +36,7 @@ cards.forEach((card, index) => {
         holdPair.push(card);
 
         if (holdPair.length === 2) {
-            // Use time out so that you can see the second card before the it flips both
+            // Use time out so both cards are seen before flipped again
             setTimeout(() => {
                 checkPair(holdPair);
                 holdPair = [];
