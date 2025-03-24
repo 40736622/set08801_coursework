@@ -1,0 +1,39 @@
+.cards-board {
+    display: grid;
+    gap: 1rem;
+}
+
+.card-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.card {
+    width: 6rem;
+    height: 8rem;
+    background-color: var(--mantle);;
+    border: 1px solid #fff;
+}
+
+.card:hover {
+    cursor: pointer;
+}
+
+.card span {
+    font-size: 4rem;
+    visibility: hidden;
+}
+
+.card-flip {
+    animation: flipping 0.5s 1;
+}
+
+@keyframes flipping {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
