@@ -1,5 +1,8 @@
 // DOM Elements
 const cards = document.querySelectorAll(".card");
+const dialog = document.querySelector(".announce-card");
+const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
+const dialogCloseBtn = dialog.querySelector(".btn-close");
 
 // Game State
 const emojis = ["😊", "🙃", "😢", "🙌", "💀", "🤖", "🐺", "🐸", "😊", "🙃", "😢", "🙌", "💀", "🤖", "🐺", "🐸"];
@@ -42,7 +45,7 @@ cards.forEach((card, index) => {
                 holdPair = [];
 
                 if (pairsGotten === 8) {
-                    console.log("Congraturlation, you won!");
+                    announceResult();
                 }
             }, 700);
         }
@@ -79,6 +82,17 @@ function checkPair(cards) {
     }
 }
 
+function announceResult() {
+    const announceHeading = dialog.querySelector(".announce-heading");
+    const announceText = dialog.querySelector(".announce-text");
+    announceHeading.textContent = "Congratulations!";
+    announceText.textContent = "You got all the pairs";
+
+    setTimeout(() => {
+        dialog.showModal(); // Open dialog
+    }, 750);
+}
+
 function resetGame() {
     holdPair = [];
     pairsGotten = 0;
@@ -94,7 +108,13 @@ function resetGame() {
 
         card.dataset.flipped = "false";
         const cardSpan = card.querySelector("span");
+        cardSpan.style.visibility = "hidden";
+        card.style.backgroundColor = "#181825";
         cardSpan.textContent = shuffledEmojis[index];
     });
-    return;
+
+    dialog.close();
 }
+
+diaglogPlayAgainBtn.addEventListener("click", resetGame); // Close dialog and start a new game
+dialogCloseBtn.addEventListener("click", () => dialog.close()); // Close dialog
