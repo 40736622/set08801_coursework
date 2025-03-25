@@ -37,6 +37,7 @@ let gameState = {
 //       ✅ Add play again functionality (reset board and choose another secret word)
 //       ✅ Add streak and date refresh
 //       ✅ Also make the streak work with localStorage
+//       - Fix localStorage streak date reset bug
 //       - Add audio functionality
 //       - Add code comments
 //       - Change keyboard section back into button tags instead of divs
