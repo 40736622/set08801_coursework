@@ -1,3 +1,33 @@
+.settings-row {
+    width: 53vmin;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-row .bi {
+    font-size: 1.8rem;
+    color: var(--subtext-0);
+}
+
+.pairs-counter p {
+    font-size: 1rem;
+}
+
+.clock {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    transform: translateX(-2rem);
+}
+
+.volume-settings:hover {
+    cursor: pointer;
+}
+
 .cards-board {
     display: grid;
     gap: 1rem;
@@ -18,6 +48,7 @@
 
 .card:hover {
     cursor: pointer;
+    border: 1px solid var(--lavender);
 }
 
 .card span {
@@ -27,6 +58,15 @@
 
 .card-flip {
     animation: flipping 0.5s 1;
+}
+
+.best-time-container {
+    width: 52vmin;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.2rem;
+
+    /* border: 1px solid #fff; */
 }
 
 @keyframes flipping {

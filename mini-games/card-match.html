@@ -26,6 +26,19 @@
                 <h1>Card Match</h1>
             </header>
 
+            <section class="settings-row">
+                <div class="pairs-counter">
+                    <p>Pairs Left: <span id="pairs-left">8</span></p>
+                </div>
+                <div class="clock">
+                    <i class="bi bi-clock-fill"></i>
+                    <span id="timer">0:00</span>
+                </div>
+                <div class="volume-settings">
+                    <i class="bi bi-volume-up-fill"></i>
+                </div>
+            </section>
+
             <section class="cards-board">
                 <div class="card-row">
                     <div data-index="0" data-flipped class="card"><span></span></div>
@@ -54,6 +67,11 @@
                     <div data-index="14" data-flipped class="card"><span></span></div>
                     <div data-index="15" data-flipped class="card"><span></span></div>
                 </div>
+            </section>
+
+            <section class="best-time-container">
+                    <p>Best Time: </p>
+                    <span id="best-time">0:00</span>
             </section>
 
             <dialog class="announce-card">
