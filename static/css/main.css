@@ -211,32 +211,40 @@ main {
 }
 
 .icon.tic-tac-toe-icon {
-    -webkit-mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
-    mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
+    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/tic-tac-toe.svg) no-repeat center;
+    mask: url(https://40736622.github.io/set08801_coursework/static/icons/tic-tac-toe.svg) no-repeat center;
+    /* -webkit-mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
+    mask: url(/static/icons/tic-tac-toe.svg) no-repeat center; */
     -webkit-mask-size: contain;
     mask-size: contain;
     background-color: var(--sky);
 }
 
 .wordle-icon {
-    -webkit-mask: url(/static/icons/wordle.svg) no-repeat center;
-    mask: url(/static/icons/wordle.svg) no-repeat center;
+    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/wordle.svg) no-repeat center;
+    mask: url(https://40736622.github.io/set08801_coursework/static/icons/wordle.svg) no-repeat center;
+    /* -webkit-mask: url(/static/icons/wordle.svg) no-repeat center;
+    mask: url(/static/icons/wordle.svg) no-repeat center; */
     -webkit-mask-size: contain;
     mask-size: contain;
     background-color: var(--green);
 }
 
 .card-match-icon {
-    -webkit-mask: url(/static/icons/card-match.svg) no-repeat center;
-    mask: url(/static/icons/card-match.svg) no-repeat center;
+    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/card-match.svg) no-repeat center;
+    mask: url(https://40736622.github.io/set08801_coursework/static/icons/card-match.svg) no-repeat center;
+    /* -webkit-mask: url(/static/icons/card-match.svg) no-repeat center;
+    mask: url(/static/icons/card-match.svg) no-repeat center; */
     -webkit-mask-size: contain;
     mask-size: contain;
     background-color: var(--lavender);
 }
 
 .synth-icon {
-    -webkit-mask: url(/static/icons/synth.svg) no-repeat center;
-    mask: url(/static/icons/synth.svg) no-repeat center;
+    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/synth.svg) no-repeat center;
+    mask: url(https://40736622.github.io/set08801_coursework/static/icons/synth.svg) no-repeat center;
+    /* -webkit-mask: url(/static/icons/synth.svg) no-repeat center;
+    mask: url(/static/icons/synth.svg) no-repeat center; */
     -webkit-mask-size: contain;
     mask-size: contain;
     background-color: var(--red);
