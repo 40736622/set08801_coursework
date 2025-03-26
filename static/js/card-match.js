@@ -39,53 +39,6 @@ function shuffleArray(arr) {
     return arr;
 }
 
-// Handles all game logic 
-cards.forEach((card, index) => {
-    card.dataset.flipped = "false";
-    const cardSpan = card.querySelector("span");
-    cardSpan.textContent = shuffledEmojis[index];
-
-    card.addEventListener("click", () => {
-        if (holdPair.length === 2 || card.dataset.flipped === "true") return; // Prevent more than 2 flips
-
-        if (!intervalStarted) {
-            intervalStarted = true;
-            gameStartTime = new Date().getTime();
-            // Start timer
-            timer = setInterval(() => {
-                seconds++;
-                timerText.textContent = formatTime(seconds);
-            }, 1000);
-        }
-
-        card.classList.add("card-flip");
-
-        setTimeout(() => {
-            card.classList.remove("card-flip");
-        }, 200);
-
-        changeFlipState(false, card, cardSpan);
-        holdPair.push(card);
-
-        if (holdPair.length === 2) {
-            // Use timeout so both cards are seen before flipping
-            setTimeout(() => {
-                checkPair(holdPair);
-                holdPair = [];
-
-                if (pairsGotten === MAX_PAIRS) {
-                    const gameEndTime = new Date().getTime()
-                    const gameDuration = Math.floor((gameEndTime - gameStartTime) / 1000);  // Calculate duration of the game for more accurate time
-                    setCardMatchLocalStorage(gameDuration);
-                    updateBestTime();
-                    clearInterval(timer); // Stop timer
-                    announceResult();
-                }
-            }, 700);
-        }
-    });
-});
-
 /**
  * Flips the card to face upward or downward.
  * @param {boolean} isFlipped - Tells if the card is facing upward.
@@ -222,6 +175,53 @@ function updateBestTime() {
         bestTimeText.textContent = formatTime(lastBestTime.bestTime);
     }
 }
+
+// Handles all game logic 
+cards.forEach((card, index) => {
+    card.dataset.flipped = "false";
+    const cardSpan = card.querySelector("span");
+    cardSpan.textContent = shuffledEmojis[index];
+
+    card.addEventListener("click", () => {
+        if (holdPair.length === 2 || card.dataset.flipped === "true") return; // Prevent more than 2 flips
+
+        if (!intervalStarted) {
+            intervalStarted = true;
+            gameStartTime = new Date().getTime();
+            // Start timer
+            timer = setInterval(() => {
+                seconds++;
+                timerText.textContent = formatTime(seconds);
+            }, 1000);
+        }
+
+        card.classList.add("card-flip");
+
+        setTimeout(() => {
+            card.classList.remove("card-flip");
+        }, 200);
+
+        changeFlipState(false, card, cardSpan);
+        holdPair.push(card);
+
+        if (holdPair.length === 2) {
+            // Use timeout so both cards are seen before flipping
+            setTimeout(() => {
+                checkPair(holdPair);
+                holdPair = [];
+
+                if (pairsGotten === MAX_PAIRS) {
+                    const gameEndTime = new Date().getTime()
+                    const gameDuration = Math.floor((gameEndTime - gameStartTime) / 1000);  // Calculate duration of the game for more accurate time
+                    setCardMatchLocalStorage(gameDuration);
+                    updateBestTime();
+                    clearInterval(timer); // Stop timer
+                    announceResult();
+                }
+            }, 700);
+        }
+    });
+});
 
 //removeCardMatchLocalStorage();
 updateBestTime();
