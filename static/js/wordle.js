@@ -37,7 +37,7 @@ let gameState = {
 //       ✅ Add play again functionality (reset board and choose another secret word)
 //       ✅ Add streak and date refresh
 //       ✅ Also make the streak work with localStorage
-//       - Fix localStorage streak date reset bug
+//       ✅ Fix localStorage streak date reset bug
 //       - Add audio functionality
 //       - Add code comments
 //       - Change keyboard section back into button tags instead of divs
@@ -89,8 +89,6 @@ function announceResult() {
     }, 2200);
 }
 /* ------------------ Game Logic -----------------------*/
-// TODO: - Recheck logic and make it look better
-//       - Add a check to see if the guess word is too short to be submitted.
 function submitGuessWord() {
     activeBoxes.forEach((box) => gameState.currentGuess += box.textContent.toLowerCase());
 
@@ -121,6 +119,7 @@ function submitGuessWord() {
         } else {
             stopInput();
             gameState.status = "lost";
+            gameState.lastDateStreakRecorded = new Date().getDate();
             announceResult();
         }
     }
@@ -176,7 +175,7 @@ function handleInput(input) {
         deleteLetter();
     }
 
-    // Checks if the input is a letter
+    // Checks if the input is a letter using regex
     if (input.match(/^[a-zA-Z]$/g)) {
         if (currentBoxIndex < 5) {
             activeBoxes[currentBoxIndex].textContent = input.toUpperCase();
@@ -276,16 +275,14 @@ async function getRandomWord() {
     }
 }
 
-// TODO: - Add all came functionality here or at least most
 async function startWordleGame() {
     gameState.secretWord = await getRandomWord();
-    console.log(gameState.secretWord);
+    /*console.log(gameState.secretWord);*/
 }
 
-// TODO: - Add reset wordle game logic
 async function resetWordleGame() {
     gameState.secretWord = await getRandomWord();
-    console.log(gameState.secretWord);
+    /*console.log(gameState.secretWord);*/
     gameState.status = "in_progress";
     gameState.currentGuess = "";
     gameState.currentAttempt = 1;
@@ -339,9 +336,8 @@ function restoreGameState() {
 
     if (lastSavedGameState && lastSavedGameState.status === "in_progress" && lastSavedGameState.currentAttempt > 1) {
         gameState = lastSavedGameState;
-        console.log(gameState.secretWord);
+        /*console.log(gameState.secretWord);*/
 
-        resetDailyStreak(lastSavedGameState);
         // Reset input to start at the first row
         changeActiveRow();
 
@@ -354,13 +350,12 @@ function restoreGameState() {
             }
         }
     } else {
-        resetDailyStreak();
         startWordleGame();
     }
 }
 
-// Bug: - For some reason it resets an in progress game when the page is revisted.
-function resetDailyStreak(lastSavedGameState = null) {
+function resetDailyStreak() {
+    const lastSavedGameState = getWordleLocalStorage();
     if (lastSavedGameState && lastSavedGameState.lastDateStreakRecorded !== new Date().getDate()) {
         gameState.lastDateStreakRecorded = null;
         gameState.dailyStreak = 0;
@@ -369,6 +364,7 @@ function resetDailyStreak(lastSavedGameState = null) {
 }
 
 restoreGameState();
+resetDailyStreak();
 updateDailyStreak();
 startInput();
 
