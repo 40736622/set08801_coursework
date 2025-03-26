@@ -121,7 +121,7 @@ function checkWinner(playerMoves, winningCombinations) {
 }
 
 /**
- * Updates the DOM to display the game result, indicating whether player X or O won, or if it's a tie.
+ * Shows the announcement dialog to display the game result, indicating whether player X or O won, or if it's a tie.
  * @param {boolean} xWon - Holds the win state of player X, either true or false.
  * @param {boolean} oWon - Holds the win state of player O, either true or false.
  */

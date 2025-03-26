@@ -22,10 +22,15 @@ let shuffledEmojis = shuffleArray(emojis);
 //       Add audio functionality
 //       ✅ Show remaining pairs left
 //       ✅ Add localStorage functionality with best time saved
-//       Add code comments
+//       ✅ Add code comments
 
 // Fisher-Yates Sorting Algorithm
 // https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
+/**
+ * Randomly shuffles an array.
+ * @param {Array} arr - Holds elements to be shuffled.
+ * @returns Shuffled array.
+ */
 function shuffleArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -34,17 +39,19 @@ function shuffleArray(arr) {
     return arr;
 }
 
+// Handles all game logic 
 cards.forEach((card, index) => {
     card.dataset.flipped = "false";
     const cardSpan = card.querySelector("span");
     cardSpan.textContent = shuffledEmojis[index];
 
-    card.addEventListener("click", (e) => {
+    card.addEventListener("click", () => {
         if (holdPair.length === 2 || card.dataset.flipped === "true") return; // Prevent more than 2 flips
 
         if (!intervalStarted) {
             intervalStarted = true;
             gameStartTime = new Date().getTime();
+            // Start timer
             timer = setInterval(() => {
                 seconds++;
                 timerText.textContent = formatTime(seconds);
@@ -57,21 +64,21 @@ cards.forEach((card, index) => {
             card.classList.remove("card-flip");
         }, 200);
 
-        changeFlipState(false, card, cardSpan); // Flip the card
+        changeFlipState(false, card, cardSpan);
         holdPair.push(card);
 
         if (holdPair.length === 2) {
-            // Use time out so both cards are seen before flipped again
+            // Use timeout so both cards are seen before flipping
             setTimeout(() => {
                 checkPair(holdPair);
                 holdPair = [];
 
                 if (pairsGotten === MAX_PAIRS) {
                     const gameEndTime = new Date().getTime()
-                    const gameDuration = Math.floor((gameEndTime - gameStartTime) / 1000);
+                    const gameDuration = Math.floor((gameEndTime - gameStartTime) / 1000);  // Calculate duration of the game for more accurate time
                     setCardMatchLocalStorage(gameDuration);
                     updateBestTime();
-                    clearInterval(timer); // Stop timer clock
+                    clearInterval(timer); // Stop timer
                     announceResult();
                 }
             }, 700);
@@ -79,6 +86,12 @@ cards.forEach((card, index) => {
     });
 });
 
+/**
+ * Flips the card to face upward or downward.
+ * @param {boolean} isFlipped - Tells if the card is facing upward.
+ * @param {HTMLElement} card - Represents clicked card.
+ * @param {HTMLSpanElement} cardSpan - Represents span element of the card.
+ */
 function changeFlipState(isFlipped, card, cardSpan) {
     if (!isFlipped) {
         cardSpan.style.visibility = "visible";
@@ -91,6 +104,10 @@ function changeFlipState(isFlipped, card, cardSpan) {
     }
 }
 
+/**
+ * Checks if a pair of cards are the same.
+ * @param {NodeListOf<HTMLElement>} cards - Holds a pair of cards. 
+ */
 function checkPair(cards) {
     const [card1, card2] = cards;
     if (card1.querySelector("span").textContent === card2.querySelector("span").textContent) {
@@ -110,6 +127,9 @@ function checkPair(cards) {
     }
 }
 
+/**
+ * Shows the announcement dialog to display the game result.
+ */
 function announceResult() {
     const announceHeading = dialog.querySelector(".announce-heading");
     const announceText = dialog.querySelector(".announce-text");
@@ -121,6 +141,9 @@ function announceResult() {
     }, 750);
 }
 
+/**
+ * Resets the entire game to start a new round.
+ */
 function resetGame() {
     holdPair = [];
     pairsGotten = 0;
@@ -164,11 +187,11 @@ function formatTime(seconds) {
  * @param {Number} gameDuration - Represents the game duration.
  */
 function setCardMatchLocalStorage(gameDuration) {
-    const lastBestTime = getCardMatchLocalStorage();
-    const previousBestTime = lastBestTime.bestTime ?? Infinity;
+    const lastSavedBestTime = getCardMatchLocalStorage();
+    const bestTime = lastSavedBestTime.bestTime ?? Infinity;
 
-    if (gameDuration < previousBestTime) {
-        const bestTime = JSON.stringify({ "bestTime": gameDuration});
+    if (gameDuration < bestTime) {
+        const bestTime = JSON.stringify({ "bestTime": gameDuration });
         localStorage.setItem("cardMatch", bestTime);
     }
 }
@@ -179,16 +202,19 @@ function setCardMatchLocalStorage(gameDuration) {
  */
 function getCardMatchLocalStorage() {
     const storedData = localStorage.getItem("cardMatch");
-    return storedData ? JSON.parse(storedData) : {bestTime: null};
+    return storedData ? JSON.parse(storedData) : { bestTime: null };
 }
 
 /**
- * Deletes Card Match best time from Local Storage. Mostly used for debugging.
+ * Deletes Card Match data from Local Storage. Mostly used for debugging.
  */
 function removeCardMatchLocalStorage() {
     localStorage.removeItem("cardMatch");
 }
 
+/**
+ * Updates the display for the Best Time text by retreiving it from the local storage.
+ */
 function updateBestTime() {
     const lastBestTime = getCardMatchLocalStorage();
 
