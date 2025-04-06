@@ -205,47 +205,25 @@ main {
 } */
 
 .icon {
-    display: inline-block;
+    /* display: inline-block; */
     width: 8rem;
     height: 8rem;
 }
 
 .icon.tic-tac-toe-icon {
-    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/tic-tac-toe.svg) no-repeat center;
-    mask: url(https://40736622.github.io/set08801_coursework/static/icons/tic-tac-toe.svg) no-repeat center;
-    /* -webkit-mask: url(/static/icons/tic-tac-toe.svg) no-repeat center;
-    mask: url(/static/icons/tic-tac-toe.svg) no-repeat center; */
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    background-color: var(--sky);
+    /* border: solid #fff; */
 }
 
-.wordle-icon {
-    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/wordle.svg) no-repeat center;
-    mask: url(https://40736622.github.io/set08801_coursework/static/icons/wordle.svg) no-repeat center;
-    /* -webkit-mask: url(/static/icons/wordle.svg) no-repeat center;
-    mask: url(/static/icons/wordle.svg) no-repeat center; */
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    background-color: var(--green);
+.wordsy-icon {
+    /* border: solid #fff; */
 }
 
 .card-match-icon {
-    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/card-match.svg) no-repeat center;
-    mask: url(https://40736622.github.io/set08801_coursework/static/icons/card-match.svg) no-repeat center;
-    /* -webkit-mask: url(/static/icons/card-match.svg) no-repeat center;
-    mask: url(/static/icons/card-match.svg) no-repeat center; */
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    background-color: var(--lavender);
+    /* border: solid #fff; */
 }
 
 .synth-icon {
-    -webkit-mask: url(https://40736622.github.io/set08801_coursework/static/icons/synth.svg) no-repeat center;
-    mask: url(https://40736622.github.io/set08801_coursework/static/icons/synth.svg) no-repeat center;
-    /* -webkit-mask: url(/static/icons/synth.svg) no-repeat center;
-    mask: url(/static/icons/synth.svg) no-repeat center; */
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    background-color: var(--red);
+    width: 10.4rem;
+    transform: rotate(350deg);
+    /* border: solid #fff; */
 }
