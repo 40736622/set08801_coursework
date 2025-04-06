@@ -16,10 +16,10 @@ const boxColors = {
     misplaced: "#f9e2af"
 };
 
-// Game State
 const MAX_ATTEMPTS = 6;
 let currentBoxIndex = 0;
 
+// Game State
 let gameState = {
     status: "in_progress",
     secretWord: "",
@@ -39,7 +39,7 @@ let gameState = {
 //       ✅ Also make the streak work with localStorage
 //       ✅ Fix localStorage streak date reset bug
 //       - Add audio functionality
-//       - Add code comments
+//       ✅ Add code comments
 //       - Change keyboard section back into button tags instead of divs
 //       ✅ Recheck if I have HTML semantics set properly
 
@@ -72,6 +72,9 @@ function triggerBoxFlipping(rowBoxes) {
     }, 2000);
 }
 
+/**
+ * Shows the announcement dialog to display the game result.
+ */
 function announceResult() {
     const announceHeading = dialog.querySelector(".announce-heading");
     const announceText = dialog.querySelector(".announce-text");
@@ -88,7 +91,11 @@ function announceResult() {
         dialog.showModal(); // Open dialog
     }, 2200);
 }
-/* ------------------ Game Logic -----------------------*/
+
+/**
+ * Evaluates if the current guess word is the correct word.
+ * @returns
+ */
 function submitGuessWord() {
     activeBoxes.forEach((box) => gameState.currentGuess += box.textContent.toLowerCase());
 
@@ -166,6 +173,10 @@ function stopInput() {
     });
 }
 
+/**
+ * Handles the key inputs.
+ * @param {KeyboardEvent | MouseEvent} input - Event object from a keydown or click event.
+ */
 function handleInput(input) {
     if (input === "Enter") {
         submitGuessWord();
@@ -184,11 +195,15 @@ function handleInput(input) {
     }
 }
 
+/**
+ * Evaluates each letter of the current guess word.
+ */
 function checkLetters() {
     let letterEvaluations = Array(5).fill("");
     let secretWordLetters = gameState.secretWord.split("");
     let guessWordLetters = gameState.currentGuess.split("");
 
+    // Checks for correctly placed letters
     for (let i = 0; i < guessWordLetters.length; i++) {
         if (guessWordLetters[i] === secretWordLetters[i]) {
             letterEvaluations[i] = "correct"
@@ -197,6 +212,7 @@ function checkLetters() {
         }
     }
 
+    // Checks for misplaced letters
     for (let i = 0; i < guessWordLetters.length; i++) {
         if (!guessWordLetters[i]) continue;
         const index = secretWordLetters.indexOf(guessWordLetters[i]);
@@ -206,6 +222,7 @@ function checkLetters() {
         }
     }
 
+    // Checks for incorrect letters
     letterEvaluations.forEach((element, index) => {
         if (element === "") {
             letterEvaluations[index] = "incorrect";
@@ -267,6 +284,10 @@ async function getWordleWords() {
     }
 }
 
+/**
+ * 
+ * @returns A random word.
+ */
 async function getRandomWord() {
     words = await getWordleWords();
 
@@ -275,11 +296,17 @@ async function getRandomWord() {
     }
 }
 
+/**
+ * Choices a new guess word to start a game.
+ */
 async function startWordleGame() {
     gameState.secretWord = await getRandomWord();
     /*console.log(gameState.secretWord);*/
 }
 
+/**
+ * Choices a new guess word and clears the game board to start a new game.
+ */
 async function resetWordleGame() {
     gameState.secretWord = await getRandomWord();
     /*console.log(gameState.secretWord);*/
@@ -303,18 +330,31 @@ async function resetWordleGame() {
     startInput();
 }
 
+/**
+ * Saves wordle game data in Local Storage.
+ */
 function setWordleLocalStorage() {
     localStorage.setItem("wordle", JSON.stringify(gameState));
 }
 
+/**
+ * 
+ * @returns Object representation of wordle game data from Local Storage.
+ */
 function getWordleLocalStorage() {
     return JSON.parse(localStorage.getItem("wordle"));
 }
 
+/**
+ * Deletes Wordle data from Local Storage. Mostly used for debugging.
+ */
 function removeWordleLocalStorage() {
     localStorage.removeItem("wordle");
 }
 
+/**
+ * Updates the daily streak on the DOM.
+ */
 function updateDailyStreak() {
     const lastSavedGameState = getWordleLocalStorage();
     if (lastSavedGameState) {
@@ -323,6 +363,9 @@ function updateDailyStreak() {
     }
 }
 
+/**
+ * Changes the active row based on the current attempt.
+ */
 function changeActiveRow() {
     currentBoxIndex = 0;
     activeRow.classList.remove("row-active");
@@ -331,6 +374,9 @@ function changeActiveRow() {
     activeBoxes = getActiveBoxes();
 }
 
+/**
+ * Restores the board to an in progress game if one exist.
+ */
 function restoreGameState() {
     const lastSavedGameState = getWordleLocalStorage();
 
@@ -338,7 +384,6 @@ function restoreGameState() {
         gameState = lastSavedGameState;
         /*console.log(gameState.secretWord);*/
 
-        // Reset input to start at the first row
         changeActiveRow();
 
         for (let i = 0; i < gameState.guesses.length; i++) {
@@ -354,6 +399,9 @@ function restoreGameState() {
     }
 }
 
+/**
+ * Resets the daily streak when a day has passed.
+ */
 function resetDailyStreak() {
     const lastSavedGameState = getWordleLocalStorage();
     if (lastSavedGameState && lastSavedGameState.lastDateStreakRecorded !== new Date().getDate()) {

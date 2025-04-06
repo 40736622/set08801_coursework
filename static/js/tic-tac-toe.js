@@ -236,7 +236,7 @@ function resetGame() {
 }
 
 /**
- * Sets Tic-Tac-Toe scores within Local Storage.
+ * Saves Tic-Tac-Toe scores within Local Storage.
  * @param {Number} xWins - Represents the total number of player X wins.
  * @param {Number} oWins - Represents the total number of player O wins.
  * @param {Number} ties  - Represents the total number of ties.

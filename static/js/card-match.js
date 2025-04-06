@@ -136,7 +136,7 @@ function formatTime(seconds) {
 }
 
 /**
- * Sets Card Match best time within Local Storage.
+ * Saves Card Match best time within Local Storage.
  * @param {Number} gameDuration - Represents the game duration.
  */
 function setCardMatchLocalStorage(gameDuration) {
