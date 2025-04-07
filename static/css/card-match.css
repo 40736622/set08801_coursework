@@ -203,4 +203,11 @@ dialog::backdrop {
         gap: 0.2rem;
         font-size: 0.8rem;
     }
+
+    dialog:open {
+        width: 80%;
+        height: 30%;
+        top: 15%;
+        left: 10%;
+    }
 }
