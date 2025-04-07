@@ -230,9 +230,9 @@ dialog::backdrop {
     }
 
     .btn {
-        width: 1.5rem;
-        height: 2.5rem;
-        padding: 0.5rem;
+        width: 1.65rem;
+        height: 3rem;
+        padding: 0;
         font-size: 0.7rem;
     }
 
