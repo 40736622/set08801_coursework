@@ -153,17 +153,18 @@ dialog::backdrop {
     gap: 0.8rem;
 }
 
+/* Only make the text blink*/
 @keyframes blinking {
     0% {
-        opacity: 1;
+        color: var(--text);
     }
 
     50% {
-        opacity: 0;
+        color: transparent;
     }
 
     100% {
-        opacity: 1;
+        color: var(--text);
     }
 }
 

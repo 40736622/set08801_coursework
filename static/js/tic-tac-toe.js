@@ -78,7 +78,7 @@ function toggleComputerPlaying() {
  */
 function isBoardFull() {
     const boardBtnsArray = Array.from(boardBtns);
-    return boardBtnsArray.every((btn) => ["X", "O"].includes(btn.textContent.trim()));
+    return boardBtnsArray.every((btn) => ['X', 'O'].includes(btn.textContent.trim()));
 }
 
 /**
