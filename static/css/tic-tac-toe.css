@@ -170,3 +170,36 @@ dialog::backdrop {
 .blinking-move {
     animation: blinking 0.25s 10;
 }
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .settings-row .bi {
+        font-size: 1.5rem;
+    }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+    .settings-row .bi {
+        font-size: 1rem;
+    }
+
+    .player-settings p {
+        font-size: 0.6rem;
+    }
+
+    .score-group {
+        font-size: 0.6rem;
+    }
+
+    dialog:open {
+        width: 80%;
+        height: 30%;
+        top: 15%;
+        left: 10%;
+    }
+
+    footer p {
+        font-size: 0.8rem;
+    }
+}

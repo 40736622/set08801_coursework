@@ -33,22 +33,22 @@ li {
 
 /* Tablets */
 @media (max-width: 1024px) {
-.about-container {
-    width: 80%;
-}
+    .about-container {
+        width: 80%;
+    }
 }
 
 /* Phones */
 @media (max-width: 600px) {
-.about-container {
-    width: 90%;
-}
+    .about-container {
+        width: 90%;
+    }
 
-.about-container ul {
-    margin-left: 2rem;
-}
+    .about-container ul {
+        margin-left: 2rem;
+    }
 
-.about-container li {
-    padding-top: 0.8rem;
-}
+    .about-container li {
+        padding-top: 0.8rem;
+    }
 }
