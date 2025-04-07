@@ -1,3 +1,8 @@
+.title h2 {
+    font-size: calc(1rem + 0.65vw);
+    text-align: center;
+}
+
 .settings-row {
     width: 53vmin;
     height: auto;

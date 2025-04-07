@@ -62,7 +62,8 @@ h3 {
 }
 
 p,
-span {
+span,
+li {
     color: var(--subtext-1);
 }
 
@@ -83,7 +84,7 @@ span {
 }
 
 .navbar a:hover {
-    color: var(--subtext-0);
+    color: var(--white);
 }
 
 .navbar a::after {
@@ -140,7 +141,6 @@ main {
 }
 
 .title {
-    margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -149,6 +149,7 @@ main {
 }
 
 .title h1 {
+    font-size: calc(1.2rem + 1vw);
     text-align: center;
 }
 
@@ -162,6 +163,7 @@ main {
 .cards-container {
     width: 80%;
     height: auto;
+    margin-top: 1rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -200,17 +202,13 @@ main {
     scale: 1.1;
 }
 
-/* .card:hover a {
-    font-size: 1.125rem;
-} */
-
 .icon {
     /* display: inline-block; */
     width: 8rem;
     height: 8rem;
 }
 
-.icon.tic-tac-toe-icon {
+.tic-tac-toe-icon {
     /* border: solid #fff; */
 }
 

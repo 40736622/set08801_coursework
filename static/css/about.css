@@ -1,0 +1,54 @@
+.about-container {
+    width: 65%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: flex-start;
+    /* border: 1px solid #fff; */
+}
+
+.about-container p,
+li {
+    font-size: 1.1rem;
+}
+
+.about-container h2 {
+    font-size: calc(1rem + 0.65vw);
+    padding-top: 0.5rem;
+}
+
+.about-container ul {
+    margin-left: 3rem;
+}
+
+.about-container li {
+    padding-top: 0.5rem;
+}
+
+.about-container li::marker {
+    content: "🔘";
+    font-size: 1rem;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+.about-container {
+    width: 80%;
+}
+}
+
+/* Phones */
+@media (max-width: 600px) {
+.about-container {
+    width: 90%;
+}
+
+.about-container ul {
+    margin-left: 2rem;
+}
+
+.about-container li {
+    padding-top: 0.8rem;
+}
+}

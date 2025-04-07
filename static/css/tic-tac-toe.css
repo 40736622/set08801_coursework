@@ -1,5 +1,10 @@
 @import "main.css";
 
+.title h2 {
+    font-size: calc(1rem + 0.65vw);
+    text-align: center;
+}
+
 .main-container {
     position: relative;
 }
@@ -89,29 +94,6 @@
 #announce-winner {
     color: var(--white);
 }
-
-/* .announce-card {
-    width: 40%;
-    height: 30%;
-    opacity: 0;
-    position: absolute;
-    border-radius: 5px;
-    top: 30%;
-    left: 30%;
-    transition: all 0.3s ease-in-out;
-    z-index: -1;
-    background-color: var(--surface-0);
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-.announce-card.show {
-    opacity: 1;
-    z-index: 999;
-} */
 
 dialog:open {
     width: 40%;
