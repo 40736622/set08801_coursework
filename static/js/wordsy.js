@@ -31,7 +31,7 @@ let gameState = {
     lastDateStreakRecorded: null
 };
 
-// BUG: - When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
+// BUG: ✅ When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
 
 // TODO: ✅ Make the keyboard on the website work 
 //       ✅ Add play again functionality (reset board and choose another secret word)
@@ -40,7 +40,7 @@ let gameState = {
 //       ✅ Fix localStorage streak date reset bug
 //       - Add audio functionality
 //       ✅ Add code comments
-//       - Change keyboard section back into button tags instead of divs
+//       ✅ Change keyboard section back into button tags instead of divs
 //       ✅ Recheck if I have HTML semantics set properly
 
 /**
@@ -149,7 +149,16 @@ function deleteLetter() {
  * @param {KeyboardEvent | MouseEvent} e - Event object from a keydown or click event.
  */
 const handleInputCallback = (e) => {
+    if (e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+    }
+
     handleInput(e.key || e.target.textContent);
+
+    // Removes focus for a clicked button on the on-screen keyboard.
+    if (e.target.classList.contains("btn")) {
+        e.target.blur();
+    }
 }
 
 /**
