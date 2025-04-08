@@ -127,7 +127,7 @@ main {
 }
 
 .container {
-    margin: 1rem;
+    margin: 0.35rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -220,4 +220,19 @@ main {
     width: 10.4rem;
     transform: rotate(350deg);
     /* border: solid #fff; */
+}
+
+/* Phones */
+@media (max-width: 600px) {
+    .navbar {
+        margin: 1rem 1rem 0.5rem;
+    }
+
+    .navbar a {
+        font-size: 0.85rem;
+    }
+
+    footer p {
+        font-size: 0.85rem;
+    }
 }
