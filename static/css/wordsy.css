@@ -105,23 +105,45 @@
     flex-grow: 1.5;
 }
 
-/*Dialog*/
-dialog:open {
+/* Game Info Dialog */
+.game-info:open {
+    width: 15rem;
+    height: 4rem;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    border-style: none;
+    background-color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-info-text {
+    color: var(--mantle);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Announce Card Dialog*/
+.announce-card:open {
     width: 40%;
     height: 30%;
     border-radius: 15px;
-    top: 30%;
-    left: 30%;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: var(--surface-0);
     border-style: none;
 
     display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-dialog::backdrop {
+.announce-card::backdrop {
     background-color: #fff5;
     backdrop-filter: blur(4px);
 }
@@ -242,10 +264,15 @@ dialog::backdrop {
         font-size: 0.7rem;
     }
 
-    dialog:open {
+    .game-info:open {
+        top: 28%;
+    }
+
+    .announce-card:open {
         width: 80%;
         height: 30%;
         top: 15%;
         left: 10%;
+        transform: none;
     }
 }

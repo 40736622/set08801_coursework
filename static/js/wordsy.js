@@ -4,7 +4,8 @@ const rows = document.querySelectorAll(".row");
 let activeRow = document.querySelector(".row-active");
 const dailyStreakText = document.querySelector("#daily-streak");
 const audioIcon = document.querySelector(".volume-settings i");
-const dialog = document.querySelector("dialog");
+const gameInfoDialog = document.querySelector(".game-info");
+const dialog = document.querySelector(".announce-card");
 const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
 const dialogCloseBtn = dialog.querySelector(".btn-close");
 
@@ -100,7 +101,13 @@ function submitGuessWord() {
     activeBoxes.forEach((box) => gameState.currentGuess += box.textContent.toLowerCase());
 
     if (gameState.currentGuess.length < 5) {
-        alert("Word is too short!");
+        // alert("Word is too short!");
+        gameInfoDialog.showModal();
+
+        setTimeout(() => {
+            gameInfoDialog.close();
+        }, 500);
+
         gameState.currentGuess = "";
         return;
     }
@@ -279,8 +286,8 @@ function incrementDailyStreak() {
  * @returns JSON response of Wordle word list.
  */
 async function getWordleWords() {
-    // const jsonUrl = "http://127.0.0.1:5500/static/wordle.json" // For local development
-    const jsonUrl = "https://40736622.github.io/set08801_coursework/static/wordle.json"
+    const jsonUrl = "http://127.0.0.1:5500/static/wordle.json" // For local development
+    // const jsonUrl = "https://40736622.github.io/set08801_coursework/static/wordle.json"
     try {
         const response = await fetch(jsonUrl); // JSON file taken from: https://gist.github.com/mrhead/f0ced2726394588e8d9863e0568b6473
         if (!response.ok) {
