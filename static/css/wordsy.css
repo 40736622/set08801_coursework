@@ -113,7 +113,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 5px;
-    border-style: none;
+    border: 1px solid var(--white);
+    outline: transparent;
     background-color: var(--white);
     display: flex;
     justify-content: center;
@@ -122,7 +123,7 @@
 
 .game-info-text {
     color: var(--mantle);
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: bold;
 }
 
