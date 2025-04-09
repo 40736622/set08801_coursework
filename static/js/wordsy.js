@@ -11,10 +11,10 @@ const dialogCloseBtn = dialog.querySelector(".btn-close");
 
 // Board Colors
 const boxColors = {
-    default: "#e6e9ef",
-    correct: "#a6e3a1",
-    incorrect: "#585b70",
-    misplaced: "#f9e2af"
+    default: "rgb(230, 233, 239)", //#e6e9ef
+    correct: "rgb(166, 227, 161)", //#a6e3a1
+    incorrect: "rgb(49, 50, 68)", //#313244
+    misplaced: "rgb(249, 226, 175)" //#f9e2af
 };
 
 const MAX_ATTEMPTS = 6;
@@ -95,7 +95,6 @@ function announceResult() {
 
 /**
  * Evaluates if the current guess word is the correct word.
- * @returns
  */
 function submitGuessWord() {
     activeBoxes.forEach((box) => gameState.currentGuess += box.textContent.toLowerCase());
@@ -247,6 +246,31 @@ function checkLetters() {
 
     gameState.letterEvaluations.push(letterEvaluations);
     changeBoxColor(letterEvaluations, activeBoxes);
+    changeKeyboardColor(letterEvaluations, gameState.currentGuess.split(""), keyboardBtns);
+}
+
+/**
+ * Changes the color of keyboard keys when a guess is inputted.
+ * @param {Array} letterEvaluations - Letter evaluations for guess word.
+ * @param {Array} guessWord - Guess word.
+ * @param {NodeListOf<HTMLButtonElement>} keyboardBtns - Represents the on-screen keyboard buttons.
+ */
+function changeKeyboardColor(letterEvaluations, guessWord, keyboardBtns) {
+    const keyboardBtnsArray = Array.from(keyboardBtns);
+
+    for (let i = 0; i < guessWord.length; i++) {
+        const key = keyboardBtnsArray.find((element) => element.textContent.toUpperCase().trim() === guessWord[i].toUpperCase().trim());
+
+        if (letterEvaluations[i] === "correct") {
+            key.style.backgroundColor = boxColors.correct;
+        } else if (letterEvaluations[i] === "misplaced" && key.style.backgroundColor !== boxColors.correct) {
+            key.style.backgroundColor = boxColors.misplaced;
+        } else {
+            if (key.style.backgroundColor !== boxColors.correct && key.style.backgroundColor !== boxColors.misplaced) {
+                key.style.backgroundColor = boxColors.incorrect;
+            }
+        }
+    }
 }
 
 /**
@@ -343,6 +367,8 @@ async function resetWordleGame() {
         box.style.backgroundColor = boxColors.default;
     });
 
+    keyboardBtns.forEach((btn) => btn.style.backgroundColor = "rgb(108, 112, 134)");
+
     dialog.close();
     startInput();
 }
@@ -406,6 +432,7 @@ function restoreGameState() {
         for (let i = 0; i < gameState.guesses.length; i++) {
             const boxes = rows[i].querySelectorAll(".box");
             changeBoxColor(gameState.letterEvaluations[i], boxes);
+            changeKeyboardColor(gameState.letterEvaluations[i], gameState.guesses[i].split(""), keyboardBtns);
 
             for (let j = 0; j < gameState.guesses[i].length; j++) {
                 boxes[j].textContent = gameState.guesses[i][j].toUpperCase();
