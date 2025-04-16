@@ -17,6 +17,11 @@ const boxColors = {
     misplaced: "rgb(249, 226, 175)" //#f9e2af
 };
 
+const textColors = {
+    white: "rgb(255, 255, 255)",
+    mantle: "rgb(24, 24, 37)"
+};
+
 const MAX_ATTEMPTS = 6;
 let currentBoxIndex = 0;
 
@@ -114,6 +119,7 @@ function submitGuessWord() {
     gameState.guesses.push(gameState.currentGuess);
     checkLetters();
     triggerBoxFlipping(activeBoxes);
+    activeBoxes.forEach((element) => element.style.color = textColors.white)
 
     if (checkGuessWord()) {
         stopInput();
@@ -365,6 +371,7 @@ async function resetWordleGame() {
     boxes.forEach((box) => {
         box.textContent = "";
         box.style.backgroundColor = boxColors.default;
+        box.style.color = textColors.mantle;
     });
 
     keyboardBtns.forEach((btn) => btn.style.backgroundColor = "rgb(108, 112, 134)");
@@ -436,6 +443,7 @@ function restoreGameState() {
 
             for (let j = 0; j < gameState.guesses[i].length; j++) {
                 boxes[j].textContent = gameState.guesses[i][j].toUpperCase();
+                boxes[j].style.color = textColors.white;
             }
         }
     } else {

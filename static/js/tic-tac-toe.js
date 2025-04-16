@@ -1,4 +1,4 @@
-import { playAudio, toggleMute } from "./main.js";
+import { playAudio } from "./audio-helper.js";
 
 // DOM Elements
 const boardBtns = document.querySelectorAll(".box");
