@@ -1,69 +1,62 @@
 const keys = document.querySelectorAll(".white-key, .black-key")
+
 const audioCtx = new (AudioContext || webkitAudioContext)();
-let midi = null;
+const activeOscillators = {};
 let wave = undefined;
+
+const keyboardNoteMap = [
+    { noteNumber: 28, key: "KeyQ" },
+    { noteNumber: 29, key: "KeyW" },
+    { noteNumber: 30, key: "KeyE" },
+    { noteNumber: 31, key: "KeyR" },
+    { noteNumber: 32, key: "KeyT" },
+    { noteNumber: 33, key: "KeyY" },
+    { noteNumber: 34, key: "KeyU" },
+    { noteNumber: 35, key: "KeyI" },
+    { noteNumber: 36, key: "KeyO" },
+    { noteNumber: 37, key: "KeyP" },
+    { noteNumber: 38, key: "BracketLeft" },
+    { noteNumber: 39, key: "BracketRight" },
+    { noteNumber: 40, key: "KeyA" },
+    { noteNumber: 41, key: "KeyS" },
+    { noteNumber: 42, key: "KeyD" },
+    { noteNumber: 43, key: "KeyF" },
+    { noteNumber: 44, key: "KeyG" },
+    { noteNumber: 45, key: "KeyH" },
+    { noteNumber: 46, key: "KeyJ" },
+    { noteNumber: 47, key: "KeyK" },
+    { noteNumber: 48, key: "KeyL" },
+    { noteNumber: 49, key: "Semicolon" },
+    { noteNumber: 50, key: "Quote" },
+    { noteNumber: 51, key: "KeyZ" },
+    { noteNumber: 52, key: "KeyX" }
+];
 
 audioCtx.resume();
 const mainGainNode = audioCtx.createGain();
 mainGainNode.connect(audioCtx.destination);
 mainGainNode.gain.value = 1;
 
-const synthNotesMap = {
-    c3: { frequency: 130.8128, key: "KeyQ" },
-    cs3: { frequency: 138.5913, key: "KeyW" },
-    d3: { frequency: 146.8324, key: "KeyE" },
-    ds3: { frequency: 155.5635, key: "KeyR" },
-    e3: { frequency: 164.8138, key: "KeyT" },
-    f3: { frequency: 174.6141, key: "KeyY" },
-    fs3: { frequency: 184.9972, key: "KeyU" },
-    g3: { frequency: 195.9977, key: "KeyI" },
-    gs3: { frequency: 207.6523, key: "KeyO" },
-    a3: { frequency: 220.0000, key: "KeyP" },
-    as3: { frequency: 233.0819, key: "BracketLeft" },
-    b3: { frequency: 246.9417, key: "BracketRight" },
-
-    c4: { frequency: 261.6256, key: "KeyA" },
-    cs4: { frequency: 277.1826, key: "KeyS" },
-    d4: { frequency: 293.6648, key: "KeyD" },
-    ds4: { frequency: 311.1270, key: "KeyF" },
-    e4: { frequency: 329.6276, key: "KeyG" },
-    f4: { frequency: 349.2282, key: "KeyH" },
-    fs4: { frequency: 369.9944, key: "KeyJ" },
-    g4: { frequency: 391.9954, key: "KeyK" },
-    gs4: { frequency: 415.3047, key: "KeyL" },
-    a4: { frequency: 440.0000, key: "Semicolon" },
-    as4: { frequency: 466.1638, key: "Quote" },
-    b4: { frequency: 493.8833, key: "KeyZ" },
-
-    c5: { frequency: 523.2511, key: "KeyX" }
-};
-
-const frequencies = Object.values(synthNotesMap).map(note => note.frequency);
-
-// const keyboardKeys = [
-//     "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP", "BracketLeft",
-//     "BracketRight", "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Semicolon",
-//     "Quote", "KeyZ", "KeyX"
-// ];
-
 // Remember: MediaStream Recording API & Midi API
 
 function playNote(noteFrequency, wave = "square") {
-    const osc = new OscillatorNode(audioCtx, {
-        type: wave,
-        frequency: noteFrequency,
-    });
+    if (!activeOscillators[noteFrequency]) {
+        const osc = new OscillatorNode(audioCtx, {
+            type: wave,
+            frequency: noteFrequency,
+        });
 
-    osc.connect(mainGainNode);
-    osc.start();
-
-    return osc;
+        osc.connect(mainGainNode);
+        osc.start();
+        activeOscillators[noteFrequency] = osc;
+    }
 }
 
-function stopNote(osc, noteFrequency) {
-    if (osc) {
-        osc.stop();
-        osc = null;
+// function stopNote(osc, noteFrequency) {
+function stopNote(noteFrequency) {
+    if (activeOscillators[noteFrequency]) {
+        activeOscillators[noteFrequency].stop();
+        delete activeOscillators[noteFrequency];
     }
 }
 
@@ -78,61 +71,54 @@ function calculateFrequency(noteNumber, isMidi = false) {
 // Handles on-screen piano keyboard
 keys.forEach((key, index) => {
     key.dataset.noteNumber = index + 28;
-    
     key.dataset.frequency = calculateFrequency(key.dataset.noteNumber);
-    let osc = null;
 
     // Todo: - Implement with mouseover too
-    key.addEventListener("mousedown", (event) => {
-        osc = playNote(event.target.dataset.frequency);
-    });
+    key.addEventListener("mousedown", event => playNote(event.target.dataset.frequency));
+    key.addEventListener("touchstart", event => playNote(event.target.dataset.frequency));
 
-    key.addEventListener("touchstart", (event) => {
-        osc = playNote(event.target.dataset.frequency);
-    });
-
-    key.addEventListener("mouseup", (event) => stopNote(osc, event.target.dataset.frequency));
-    key.addEventListener("mouseleave", (event) => stopNote(osc, event.target.dataset.frequency));
-    key.addEventListener("touchend", (event) => stopNote(osc, event.target.dataset.frequency));
+    key.addEventListener("mouseup", event => stopNote(event.target.dataset.frequency));
+    key.addEventListener("mouseleave", event => stopNote(event.target.dataset.frequency));
+    key.addEventListener("touchend", event => stopNote(event.target.dataset.frequency));
 });
 
-function handleKeyPresses() {
-    let osc = null;
-
+function handleKeyboardPresses() {
     document.addEventListener("keydown", (event) => {
         if (event.repeat) return;
 
-        const noteEntry = Object.values(synthNotesMap).find(note => note.key === event.code);
-
+        const noteEntry = keyboardNoteMap.find(element => element.key === event.code);
+        
         if (noteEntry) {
-            osc = playNote(noteEntry.frequency);
+            const frequency = calculateFrequency(noteEntry.noteNumber);
+            playNote(frequency);
         }
     });
 
-    document.addEventListener("keyup", (event) => stopNote(osc, event.target.dataset.frequency));
+    document.addEventListener("keyup", (event) => {
+        const noteEntry = keyboardNoteMap.find(element => element.key === event.code);
+        
+        if (noteEntry) {
+            const frequency = calculateFrequency(noteEntry.noteNumber);
+            stopNote(frequency);
+        }
+    });
 }
 
 // Handles MIDI
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess().then((access) => {
-        let osc = null;
-
         const inputs = access.inputs.values();
 
         inputs.forEach((input) => {
             input.onmidimessage = (message) => {
-                const [status, note, velocity] = message.data;
-
-                const frequency = calculateFrequency(note, true);
+                const [status, noteNumber, velocity] = message.data;
+                const frequency = calculateFrequency(noteNumber, true);
 
                 if (velocity > 0) {
-                    osc = playNote(frequency);
+                    playNote(frequency);
                 } else if (velocity === 0) {
-                    stopNote(osc);
+                    stopNote(frequency);
                 }
-
-                console.log(message.data);
-
             };
         });
 
@@ -143,4 +129,4 @@ if (navigator.requestMIDIAccess) {
     });
 }
 
-handleKeyPresses();
+handleKeyboardPresses();
