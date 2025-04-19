@@ -3,6 +3,7 @@ const audioCtx = new (AudioContext || webkitAudioContext)();
 let midi = null;
 let wave = null;
 
+audioCtx.resume();
 const mainGainNode = audioCtx.createGain();
 mainGainNode.connect(audioCtx.destination);
 mainGainNode.gain.value = 1;
@@ -37,17 +38,17 @@ const synthNotesMap = {
     c5: { frequency: 523.2511, key: "KeyX", midi: 72 }
 };
 
-const keyboardKeys = [
-    "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP", "BracketLeft",
-    "BracketRight", "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Semicolon",
-    "Quote", "KeyZ", "KeyX"
-];
+const frequencies = Object.values(synthNotesMap).map(note => note.frequency);
 
-
+// const keyboardKeys = [
+//     "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP", "BracketLeft",
+//     "BracketRight", "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Semicolon",
+//     "Quote", "KeyZ", "KeyX"
+// ];
 
 // Remember: MediaStream Recording API & Midi API
 
-function playNote(wave, noteFrequency) {
+function playNote(noteFrequency, wave = "sine") {
     const osc = new OscillatorNode(audioCtx, {
         type: wave,
         frequency: noteFrequency,
@@ -59,41 +60,34 @@ function playNote(wave, noteFrequency) {
     return osc;
 }
 
-function stopNote() {
+function stopNote(osc, noteFrequency) {
     if (osc) {
         osc.stop();
+        osc = null;
     }
 }
 
-keys.forEach((key) => {
+function calculateFrequency(noteNumber) {
+    return 2 ** ((noteNumber - 49) / 12) * 440;
+}
+
+// Handles on-screen piano keyboard
+keys.forEach((key, index) => {
+    key.dataset.frequency = frequencies[index];
     let osc = null;
 
     // Todo: - Implement with mouseover too
-    //       - Implement with touchstart and touchend for mobile too
     key.addEventListener("mousedown", (event) => {
-        osc = new OscillatorNode(audioCtx, {
-            type: "triangle",
-            frequency: Number(event.target.dataset.frequency),
-        });
-
-        osc.connect(mainGainNode);
-
-        osc.start();
+        osc = playNote(event.target.dataset.frequency);
     });
 
-    key.addEventListener("mouseup", () => {
-        if (osc) {
-            osc.stop();
-            osc = null
-        }
+    key.addEventListener("touchstart", (event) => {
+        osc = playNote(event.target.dataset.frequency);
     });
 
-    key.addEventListener("mouseleave", () => {
-        if (osc) {
-            osc.stop();
-            osc = null
-        }
-    });
+    key.addEventListener("mouseup", (event) => stopNote(osc, event.target.dataset.frequency));
+    key.addEventListener("mouseleave", (event) => stopNote(osc, event.target.dataset.frequency));
+    key.addEventListener("touchend", (event) => stopNote(osc, event.target.dataset.frequency));
 });
 
 function handleKeyPresses() {
@@ -105,26 +99,14 @@ function handleKeyPresses() {
         const noteEntry = Object.values(synthNotesMap).find(note => note.key === event.code);
 
         if (noteEntry) {
-            osc = new OscillatorNode(audioCtx, {
-                type: "triangle",
-                frequency: Number(noteEntry.frequency),
-            });
-
-            osc.connect(mainGainNode);
-            osc.start();
+            osc = playNote(noteEntry.frequency);
         }
     });
 
-    document.addEventListener("keyup", (event) => {
-        if (osc) {
-            osc.stop();
-            osc = null
-        }
-    });
+    document.addEventListener("keyup", (event) => stopNote(osc, event.target.dataset.frequency));
 }
 
-handleKeyPresses();
-
+// Handles MIDI
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess().then((access) => {
         let osc = null;
@@ -136,24 +118,21 @@ if (navigator.requestMIDIAccess) {
                 const [status, note, velocity] = message.data;
 
                 if (velocity > 0) {
-                    osc = new OscillatorNode(audioCtx, {
-                        type: "triangle",
-                        frequency: Number(440),
-                    });
-
-                    osc.connect(mainGainNode);
-                    osc.start();
-                } else {
-                    osc.stop();
-                    osc = null
+                    osc = playNote(440);
+                } else if (velocity === 0) {
+                    stopNote(osc);
                 }
+
+                console.log(message.data);
 
             };
         });
 
         access.onstatechange = (event) => {
             // Print information about the (dis)connected MIDI controller
-            console.log(event.port.name, event.port.manufacturer, event.port.state);
+            console.log(event.port.name, event.port.state);
         };
     });
 }
+
+handleKeyPresses();
