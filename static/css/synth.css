@@ -5,7 +5,8 @@
 } */
 
 .synth {
-    width: 57rem; /*60% originally*/
+    width: 60%;
+    /*57rem originally*/
     height: 50dvh;
     margin-top: 1rem;
     background-color: var(--red);
@@ -18,15 +19,106 @@
 }
 
 .controls {
-    width: 80%;
+    width: 90%;
     height: 35%;
+    position: relative;
 
-    /* background-color: var(--overlay-0); */
-    border: 2px solid var(--white);
+    /* border: 2px solid var(--white); */
+}
+
+.control {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* .volume-control {
+    bottom: 5%;
+    right: 1%;
+}
+
+.filter-control {
+    bottom: 5%;
+    right: 6%;
+} */
+
+.filter-control img {
+    width: 1.5rem;
+    height: 1.5rem;
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(40deg) brightness(109%) contrast(101%);
+}
+
+input[type=range] {
+    width: 5rem;
+    /* height: 6rem; */
+    background-color: var(--overlay-0);
+    outline: transparent;
+    cursor: pointer;
+}
+
+/* input[type=range]::-webkit-slider-runnable-track {
+    width: 0.5rem;
+    background-color: var(--mantle);
+    border-radius: 10px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    background-color: var(--lavender);
+    width: 0.5rem;
+    height: 1.25rem;
+    rotate: 90deg;
+    margin: 0 0.25px 0 0;
+    border-radius: 12px;
+} */
+
+.wave-control {
+    width: 20%;
+    position: absolute;
+    bottom: 10%;
+    background-color: var(--mantle);
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wave-control input[type="radio"] {
+    display: none;
+}
+
+.wave-control label {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.25rem 0;
+    appearance: none;
+    background-color: #b1b2b5;
+    border-radius: 50%;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wave-control img {
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.wave-control input[type="radio"]:checked+label {
+    background-color: var(--lavender);
 }
 
 .keyboard {
-    width: 80%;
+    width: 90%;
     height: 50%;
     position: relative;
     display: flex;
@@ -53,10 +145,12 @@
     z-index: 2;
 }
 
-.white-key:hover, .black-key:hover {
+.white-key:hover,
+.black-key:hover {
     cursor: pointer;
 }
 
-.white-key:active, .black-key:active {
+.white-key:active,
+.black-key:active {
     transform: scale(0.98);
 }

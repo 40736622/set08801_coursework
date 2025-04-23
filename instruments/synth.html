@@ -27,7 +27,29 @@
             </header>
 
             <section class="synth">
-                <div class="controls"></div>
+                <div class="controls">
+                    <div class="wave-control">
+                        <input type="radio" id="sine" name="wave" value="sine" checked />
+                        <label for="sine" title="Sine wave" style="margin-left: 0.25rem;"><img src="../static/icons/sine-wave.svg" alt="Sine wave"></label>
+
+                        <input type="radio" id="square" name="wave" value="square" />
+                        <label for="square" title="Square wave"><img src="../static/icons/square-wave.svg" alt="Square wave"></label>
+
+                        <input type="radio" id="sawtooth" name="wave" value="sawtooth" />
+                        <label for="sawtooth" title="Sawtooth wave"><img src="../static/icons/sawtooth-wave.svg" alt="Sawtooth wave"></label>
+
+                        <input type="radio" id="triangle" name="wave" value="triangle" />
+                        <label for="triangle" title="Triangle wave" style="margin-right: 0.25rem;"><img src="../static/icons/triangle-wave.svg" alt="Triangle wave"></label>
+                    </div>
+                    <div class="control volume-control">
+                        <img src="../static/icons/volume_up.svg" alt="Volume icon">
+                        <input type="range" id="volume" name="volume" min="0" max="100" value="100" title="Volume" />
+                    </div>
+                    <div class="control filter-control">
+                        <img src="../static/icons/filter-lowpass.svg" alt="Lowpass filter icon">
+                        <input type="range" id="lowpass" name="lowpass" min="1000" max="20000" value="20000" title="Lowpass filter" />
+                    </div>
+                </div>
                 <div class="keyboard">
                     <div class="white-key"></div>
                     <div class="black-key" style="left: 4%;"></div>
