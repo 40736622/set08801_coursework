@@ -90,6 +90,7 @@ async function fetchImpulseResponse(audioPath) {
 distortionNode.connect(filterNode);
 distortionNode.connect(delayNode);
 distortionNode.connect(reverbNode);
+reverbNode.connect(filterNode);
 delayNode.connect(filterNode);
 filterNode.connect(masterGainNode);
 masterGainNode.connect(audioCtx.destination);
@@ -109,12 +110,7 @@ function playNote(noteFrequency, wave = "sine") {
 
         // Connect nodes
         osc.connect(oscGain);
-        // oscGain.connect(mainGainNode);
-        // oscGain.connect(filterNode);
         oscGain.connect(distortionNode);
-        // if (delayDuration.value > 0) {
-        //     oscGain.connect(delayNode);
-        // }
 
         osc.start();
         activeOscillators[noteFrequency] = { osc, oscGain };
