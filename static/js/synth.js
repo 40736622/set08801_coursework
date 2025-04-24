@@ -3,7 +3,12 @@ const keys = document.querySelectorAll(".white-key, .black-key");
 const waveOptions = document.querySelectorAll("input[name='wave']");
 let wave = document.querySelector("input[name='wave']:checked").value;
 let volume = document.querySelector("input[name='volume']");
-let filter = document.querySelector("input[name='lowpass']");
+const filterFrequency = document.getElementById("filter-frequency");
+const filterQ = document.getElementById("filter-Q");
+const delayDuration = document.getElementById("delay-duration");
+const delayFeedback = document.getElementById("delay-feedback");
+const distortionCurve = document.getElementById("distortion-curve");
+const reverbImpulseResponse = document.getElementById("impulse-response-select");
 
 const audioCtx = new (AudioContext || webkitAudioContext)();
 const activeOscillators = {};
@@ -40,22 +45,58 @@ const keyboardNoteMap = [
 // audioCtx.resume();
 
 // Master Gain
-const mainGainNode = audioCtx.createGain();
-mainGainNode.gain.value = volume.value / 100;
+const masterGainNode = audioCtx.createGain();
+masterGainNode.gain.value = volume.value / 100;
 
-// Effects
+// Filter Effect
 const filterNode = audioCtx.createBiquadFilter();
 filterNode.type = "lowpass";
-filterNode.frequency.value = filter.value;
-filterNode.Q.value = 3;
+filterNode.frequency.value = filterFrequency.value;
+filterNode.Q.value = filterQ.value;
+
+// Delay Effect
+const delayNode = audioCtx.createDelay();
+delayNode.delayTime.value = delayDuration.value;
+const feedback = audioCtx.createGain();
+feedback.gain.value = delayFeedback.value;
+delayNode.connect(feedback);
+feedback.connect(delayNode);
+
+// Distortion Effect
+const distortionNode = audioCtx.createWaveShaper();
+distortionNode.curve = makeDistortionCurve(Number(distortionCurve.value));
+distortionNode.oversample = "4x";
+
+// Reverb Effect
+const reverbNode = audioCtx.createConvolver();
+
+// Grab audio track via fetch() for convolver node
+async function fetchImpulseResponse(audioPath) {
+    if (!audioPath) return;
+
+    try {
+        const response = await fetch(audioPath);
+        const arrayBuffer = await response.arrayBuffer();
+        const decodedAudio = await audioCtx.decodeAudioData(arrayBuffer);
+        reverbNode.buffer = decodedAudio;
+    } catch (error) {
+        console.error(
+            `Unable to fetch the audio file. Error: ${err.message}`,
+        );
+    }
+}
 
 // Connect chain
-filterNode.connect(mainGainNode);
-mainGainNode.connect(audioCtx.destination);
+distortionNode.connect(filterNode);
+distortionNode.connect(delayNode);
+distortionNode.connect(reverbNode);
+delayNode.connect(filterNode);
+filterNode.connect(masterGainNode);
+masterGainNode.connect(audioCtx.destination);
 
 // Remember: MediaStream Recording API & Midi API
 
-function playNote(noteFrequency, wave = "square") {
+function playNote(noteFrequency, wave = "sine") {
     if (!activeOscillators[noteFrequency]) {
         const osc = new OscillatorNode(audioCtx, {
             type: wave,
@@ -69,7 +110,11 @@ function playNote(noteFrequency, wave = "square") {
         // Connect nodes
         osc.connect(oscGain);
         // oscGain.connect(mainGainNode);
-        oscGain.connect(filterNode);
+        // oscGain.connect(filterNode);
+        oscGain.connect(distortionNode);
+        // if (delayDuration.value > 0) {
+        //     oscGain.connect(delayNode);
+        // }
 
         osc.start();
         activeOscillators[noteFrequency] = { osc, oscGain };
@@ -94,11 +139,38 @@ function calculateFrequency(noteNumber, isMidi = false) {
     return 2 ** ((noteNumber - 49) / 12) * 440;
 }
 
-// Update volume
-volume.addEventListener("input", event => mainGainNode.gain.value = event.target.value / 100);
+function makeDistortionCurve(amount) {
+    const k = typeof amount === "number" ? amount : 50;
+    const n_samples = 44100;
+    const curve = new Float32Array(n_samples);
+    const deg = Math.PI / 180;
 
-// Update filter frequency
-filter.addEventListener("input", event => filterNode.frequency.value = event.target.value);
+    for (let i = 0; i < n_samples; i++) {
+        const x = (i * 2) / n_samples - 1;
+        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+}
+
+// Update volume
+volume.addEventListener("input", event => masterGainNode.gain.value = event.target.value / 100);
+
+// Update filter parameters
+filterFrequency.addEventListener("input", event => filterNode.frequency.value = event.target.value);
+filterQ.addEventListener("input", event => filterNode.Q.value = event.target.value);
+
+// Update delay parameters
+delayDuration.addEventListener("input", event => delayNode.delayTime.value = delayDuration.value / 1000);
+delayFeedback.addEventListener("input", event => feedback.gain.value = event.target.value / 100);
+
+// Update distortion parameters
+distortionCurve.addEventListener("input", event => distortionNode.curve = makeDistortionCurve(Number(event.target.value)));
+
+// Update reverb impulse response
+reverbImpulseResponse.addEventListener("change", () => {
+    fetchImpulseResponse(reverbImpulseResponse.options[reverbImpulseResponse.selectedIndex].value);
+    console.log(reverbImpulseResponse.options[reverbImpulseResponse.selectedIndex].value);
+});
 
 // Update wave type dynamically
 waveOptions.forEach((waveOption) => {
