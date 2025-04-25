@@ -78,6 +78,16 @@ input[type=range] {
     cursor: pointer;
 }
 
+.record i {
+    font-size: 2.5rem;
+    color: var(--white);
+}
+
+.record i:hover {
+    color: var(--text);
+    cursor: pointer;
+}
+
 .wave-control {
     width: 20%;
     background-color: var(--mantle);
@@ -154,4 +164,9 @@ input[type=range] {
 .white-key:active,
 .black-key:active {
     transform: scale(0.98);
+}
+
+.active-key {
+    background-color: var(--subtext-1);
+    border-color: var(--crust);
 }

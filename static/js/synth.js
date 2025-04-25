@@ -5,10 +5,23 @@ let wave = document.querySelector("input[name='wave']:checked").value;
 let volume = document.querySelector("input[name='volume']");
 const filterFrequency = document.getElementById("filter-frequency");
 const filterQ = document.getElementById("filter-Q");
+const filterFrequencyCounter = document.getElementById("filter-frequency-counter");
+const filterQCounter = document.getElementById("filter-quality-counter");
 const delayDuration = document.getElementById("delay-duration");
 const delayFeedback = document.getElementById("delay-feedback");
+const delayDurationCounter = document.getElementById("delay-duration-counter");
+const delayFeedbackCounter = document.getElementById("delay-feedback-counter");
 const distortionCurve = document.getElementById("distortion-curve");
+const distortionCurveCounter = document.getElementById("distortion-curve-counter");
 const reverbImpulseResponse = document.getElementById("impulse-response-select");
+
+filterFrequencyCounter.textContent = `${filterFrequency.value} Hz`;
+filterQCounter.textContent = filterQ.value;
+delayDurationCounter.textContent = `${delayDuration.value} ms`;
+delayFeedbackCounter.textContent = `${delayFeedback.value}%`;
+distortionCurveCounter.textContent = distortionCurve.value;
+
+// Remember: MediaStream Recording API & Midi API
 
 const audioCtx = new (AudioContext || webkitAudioContext)();
 const activeOscillators = {};
@@ -72,7 +85,10 @@ const reverbNode = audioCtx.createConvolver();
 
 // Grab audio track via fetch() for convolver node
 async function fetchImpulseResponse(audioPath) {
-    if (!audioPath) return;
+    if (!audioPath) {
+        reverbNode.buffer = null;
+        return;
+    }
 
     try {
         const response = await fetch(audioPath);
@@ -92,10 +108,9 @@ distortionNode.connect(delayNode);
 distortionNode.connect(reverbNode);
 reverbNode.connect(filterNode);
 delayNode.connect(filterNode);
+delayNode.connect(reverbNode);
 filterNode.connect(masterGainNode);
 masterGainNode.connect(audioCtx.destination);
-
-// Remember: MediaStream Recording API & Midi API
 
 function playNote(noteFrequency, wave = "sine") {
     if (!activeOscillators[noteFrequency]) {
@@ -152,20 +167,36 @@ function makeDistortionCurve(amount) {
 volume.addEventListener("input", event => masterGainNode.gain.value = event.target.value / 100);
 
 // Update filter parameters
-filterFrequency.addEventListener("input", event => filterNode.frequency.value = event.target.value);
-filterQ.addEventListener("input", event => filterNode.Q.value = event.target.value);
+filterFrequency.addEventListener("input", (event) => {
+    filterNode.frequency.value = event.target.value;
+    filterFrequencyCounter.textContent = `${event.target.value} Hz`;
+});
+
+filterQ.addEventListener("input", (event) => {
+    filterNode.Q.value = event.target.value
+    filterQCounter.textContent = event.target.value;
+});
 
 // Update delay parameters
-delayDuration.addEventListener("input", event => delayNode.delayTime.value = delayDuration.value / 1000);
-delayFeedback.addEventListener("input", event => feedback.gain.value = event.target.value / 100);
+delayDuration.addEventListener("input", (event) => {
+    delayNode.delayTime.value = event.target.value / 1000;
+    delayDurationCounter.textContent = `${event.target.value} ms`;
+});
+
+delayFeedback.addEventListener("input", (event) => {
+    feedback.gain.value = event.target.value / 100
+    delayFeedbackCounter.textContent = `${event.target.value}%`;
+});
 
 // Update distortion parameters
-distortionCurve.addEventListener("input", event => distortionNode.curve = makeDistortionCurve(Number(event.target.value)));
+distortionCurve.addEventListener("input", (event) => {
+    distortionNode.curve = makeDistortionCurve(Number(event.target.value))
+    distortionCurveCounter.textContent = event.target.value;
+});
 
 // Update reverb impulse response
 reverbImpulseResponse.addEventListener("change", () => {
     fetchImpulseResponse(reverbImpulseResponse.options[reverbImpulseResponse.selectedIndex].value);
-    console.log(reverbImpulseResponse.options[reverbImpulseResponse.selectedIndex].value);
 });
 
 // Update wave type dynamically
@@ -192,6 +223,8 @@ keys.forEach((key, index) => {
 });
 
 function handleKeyboardPresses() {
+    const onScreenPianoKeys = Array.from(keys);
+    
     document.addEventListener("keydown", (event) => {
         if (event.repeat) return;
 
@@ -200,6 +233,9 @@ function handleKeyboardPresses() {
         if (noteEntry) {
             const frequency = calculateFrequency(noteEntry.noteNumber);
             playNote(frequency, wave);
+
+            const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteEntry.noteNumber));
+            activePianoKey.classList.add("active-key");
         }
     });
 
@@ -209,6 +245,9 @@ function handleKeyboardPresses() {
         if (noteEntry) {
             const frequency = calculateFrequency(noteEntry.noteNumber);
             stopNote(frequency);
+            
+            const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteEntry.noteNumber));
+            activePianoKey.classList.remove("active-key");
         }
     });
 }
