@@ -15,6 +15,7 @@ const distortionCurve = document.getElementById("distortion-curve");
 const distortionCurveCounter = document.getElementById("distortion-curve-counter");
 const reverbImpulseResponse = document.getElementById("impulse-response-select");
 
+// Set default text for the FX counters
 filterFrequencyCounter.textContent = `${filterFrequency.value} Hz`;
 filterQCounter.textContent = filterQ.value;
 delayDurationCounter.textContent = `${delayDuration.value} ms`;
@@ -55,19 +56,17 @@ const keyboardNoteMap = [
     { noteNumber: 52, key: "KeyI" }
 ];
 
-// audioCtx.resume();
-
 // Master Gain
 const masterGainNode = audioCtx.createGain();
 masterGainNode.gain.value = volume.value / 100;
 
-// Filter Effect
+// Lowpass Filter FX
 const filterNode = audioCtx.createBiquadFilter();
 filterNode.type = "lowpass";
 filterNode.frequency.value = filterFrequency.value;
 filterNode.Q.value = filterQ.value;
 
-// Delay Effect
+// Delay FX
 const delayNode = audioCtx.createDelay();
 delayNode.delayTime.value = delayDuration.value;
 const feedback = audioCtx.createGain();
@@ -75,42 +74,44 @@ feedback.gain.value = delayFeedback.value;
 delayNode.connect(feedback);
 feedback.connect(delayNode);
 
-// Distortion Effect
+// Distortion FX
 const distortionNode = audioCtx.createWaveShaper();
 distortionNode.curve = makeDistortionCurve(Number(distortionCurve.value));
 distortionNode.oversample = "4x";
 
-// Reverb Effect
+// Reverb FX
 const reverbNode = audioCtx.createConvolver();
+reverbNode.buffer = null;
+const reverbWetGain = audioCtx.createGain();
+reverbWetGain.gain.value = 0.5;
+reverbWetGain.connect(reverbNode);
 
-// Grab audio track via fetch() for convolver node
-async function fetchImpulseResponse(audioPath) {
-    if (!audioPath) {
-        reverbNode.buffer = null;
-        return;
-    }
+// Wet and Dry Gains
+const mainDryGain = audioCtx.createGain();
+mainDryGain.gain.value = 0.75;
+const mainWetGain = audioCtx.createGain();
+mainWetGain.gain.value = 0.75;
 
-    try {
-        const response = await fetch(audioPath);
-        const arrayBuffer = await response.arrayBuffer();
-        const decodedAudio = await audioCtx.decodeAudioData(arrayBuffer);
-        reverbNode.buffer = decodedAudio;
-    } catch (error) {
-        console.error(
-            `Unable to fetch the audio file. Error: ${err.message}`,
-        );
-    }
-}
-
-// Connect chain
+// --------------- Connection Chain --------------
+// Distortion connetions
 distortionNode.connect(filterNode);
-distortionNode.connect(delayNode);
-distortionNode.connect(reverbNode);
-reverbNode.connect(filterNode);
-delayNode.connect(filterNode);
-delayNode.connect(reverbNode);
-filterNode.connect(masterGainNode);
-masterGainNode.connect(audioCtx.destination);
+
+// Filter connections
+filterNode.connect(mainDryGain);
+filterNode.connect(delayNode);
+filterNode.connect(reverbWetGain);
+
+// Delay connections
+delayNode.connect(mainDryGain);
+delayNode.connect(reverbWetGain);
+
+// Reverb connections
+reverbNode.connect(mainWetGain);
+
+// Outputs
+mainDryGain.connect(masterGainNode);    // dry to master
+mainWetGain.connect(masterGainNode);    // wet to master
+masterGainNode.connect(audioCtx.destination);   // destination
 
 function playNote(noteFrequency, wave = "sine") {
     if (!activeOscillators[noteFrequency]) {
@@ -121,7 +122,7 @@ function playNote(noteFrequency, wave = "sine") {
 
         // Create a gain node for the oscillator
         const oscGain = audioCtx.createGain();
-        oscGain.gain.value = 0.2;
+        oscGain.gain.value = 0.2;   // Decrease gain value do the audio doesn't clip when multiple notes are pressed
 
         // Connect nodes
         osc.connect(oscGain);
@@ -130,15 +131,12 @@ function playNote(noteFrequency, wave = "sine") {
         osc.start();
 
         activeOscillators[noteFrequency] = { osc, oscGain };
-        // console.log(activeOscillators);
     }
 }
 
-// function stopNote(osc, noteFrequency) {
 function stopNote(noteFrequency) {
     if (activeOscillators[noteFrequency]) {
-        activeOscillators[noteFrequency].oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015); // Stops pops and click sounds
-        // activeOscillators[noteFrequency].osc.stop();
+        activeOscillators[noteFrequency].oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015); // Stop pop and click sounds
         delete activeOscillators[noteFrequency];
     }
 }
@@ -162,6 +160,26 @@ function makeDistortionCurve(amount) {
         curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
     }
     return curve;
+}
+
+// Grab audio track via fetch() for convolver node
+async function fetchImpulseResponse(audioPath) {
+    try {
+        if (!audioPath) {
+            reverbNode.buffer = null;
+            return;
+        }
+
+        const response = await fetch(audioPath);
+        const arrayBuffer = await response.arrayBuffer();
+        const decodedAudio = await audioCtx.decodeAudioData(arrayBuffer);
+        reverbNode.buffer = decodedAudio;
+    } catch (error) {
+        console.error(
+            `Unable to fetch the audio file. Error: ${err.message}`,
+        );
+        reverbNode.buffer = null;
+    }
 }
 
 // Update volume
@@ -200,7 +218,7 @@ reverbImpulseResponse.addEventListener("change", () => {
     fetchImpulseResponse(reverbImpulseResponse.options[reverbImpulseResponse.selectedIndex].value);
 });
 
-// Update wave type dynamically
+// Update wave type
 waveOptions.forEach((waveOption) => {
     waveOption.addEventListener("change", (event) => {
         if (event.target.checked) {
@@ -214,7 +232,6 @@ keys.forEach((key, index) => {
     key.dataset.noteNumber = index + 28;
     key.dataset.frequency = calculateFrequency(key.dataset.noteNumber);
 
-    // Todo: - Implement with mouseover too
     key.addEventListener("mousedown", event => playNote(event.target.dataset.frequency, wave));
     key.addEventListener("touchstart", event => playNote(event.target.dataset.frequency, wave));
 
@@ -257,6 +274,7 @@ function handleKeyboardPresses() {
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess().then((access) => {
         const inputs = access.inputs.values();
+        const onScreenPianoKeys = Array.from(keys);
 
         inputs.forEach((input) => {
             input.onmidimessage = (message) => {
@@ -268,8 +286,17 @@ if (navigator.requestMIDIAccess) {
                 // 144 and 128 - keys
                 if (status === 144 && velocity > 0) {
                     playNote(frequency, wave);
+
+                    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber - 20));
+                    if (activePianoKey) {
+                        activePianoKey.classList.add("active-key");
+                    }
                 } else if (status === 128 && velocity === 0) {
                     stopNote(frequency);
+                    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber - 20));
+                    if (activePianoKey) {
+                        activePianoKey.classList.remove("active-key");
+                    }
                 }
             };
         });
