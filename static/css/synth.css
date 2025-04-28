@@ -93,6 +93,7 @@ input[type=range] {
     width: auto;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .volume-control input[type=range] {
@@ -106,6 +107,7 @@ input[type=range] {
 
 .record i:hover {
     color: var(--text);
+    /*active color - #ff2e63*/
     cursor: pointer;
 }
 
@@ -208,4 +210,75 @@ input[type=range] {
 .active-key {
     background-color: var(--mauve);
     border-color: var(--crust);
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .synth {
+        width: 80%;
+    }
+
+    .sound-design-controls select {
+        width: 95%;
+    }
+
+    span,
+    legend,
+    label,
+    output {
+        font-size: 0.9rem;
+    }
+
+    .wave-control label {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    .keyboard span {
+        font-size: 0.8rem;
+    }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+    .synth {
+        width: 90%;
+    }
+    
+    select,
+    span,
+    legend,
+    label,
+    output {
+        font-size: 0.75rem;
+    }
+
+    .sound-design-controls input[type=range] {
+        width: 90%;
+    }
+
+    .wave-control label {
+        width: 1.3rem;
+        height: 1.3rem;
+    }
+
+    .record {
+        margin-left: 3rem;
+    }
+
+    .record i {
+        font-size: 1.9rem;
+    }
+
+    .volume-control {
+        justify-content: flex-end;
+    }
+
+    .volume-control input[type=range] {
+        width: 60%;
+    }
+
+    .keyboard span {
+        font-size: 0.6rem;
+    }
 }
