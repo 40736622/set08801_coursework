@@ -56,6 +56,9 @@ const keyboardNoteMap = [
     { noteNumber: 52, key: "KeyI" }
 ];
 
+// Create array from on-screen keys
+const onScreenPianoKeys = Array.from(keys);
+
 // Master Gain
 const masterGainNode = audioCtx.createGain();
 masterGainNode.gain.value = volume.value / 100;
@@ -113,6 +116,11 @@ mainDryGain.connect(masterGainNode);    // dry to master
 mainWetGain.connect(masterGainNode);    // wet to master
 masterGainNode.connect(audioCtx.destination);   // destination
 
+/**
+ * Plays musical note based on frequency and wave type.
+ * @param {Number} noteFrequency - Frequency.
+ * @param {String} wave - Wave type.
+ */
 function playNote(noteFrequency, wave = "sine") {
     if (!activeOscillators[noteFrequency]) {
         const osc = new OscillatorNode(audioCtx, {
@@ -122,25 +130,38 @@ function playNote(noteFrequency, wave = "sine") {
 
         // Create a gain node for the oscillator
         const oscGain = audioCtx.createGain();
-        oscGain.gain.value = 0.2;   // Decrease gain value do the audio doesn't clip when multiple notes are pressed
+        oscGain.gain.value = 0.2;   // Decrease gain value so the audio doesn't clip when multiple notes are pressed
 
         // Connect nodes
         osc.connect(oscGain);
         oscGain.connect(distortionNode);
 
-        osc.start();
+        osc.start(); // start oscillator
 
         activeOscillators[noteFrequency] = { osc, oscGain };
     }
 }
 
+/**
+ * Stops musical note.
+ * @param {Number} noteFrequency - Frequency.
+ */
 function stopNote(noteFrequency) {
     if (activeOscillators[noteFrequency]) {
-        activeOscillators[noteFrequency].oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015); // Stop pop and click sounds
+        const { osc, oscGain } = activeOscillators[noteFrequency]; // extract osc and oscGain
+        oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015); // fade out oscillator to stop pops and clicks
+        osc.stop(audioCtx.currentTime + 0.05); // stop oscillator 
+
         delete activeOscillators[noteFrequency];
     }
 }
 
+/**
+ * Calculates note frequency based on note number.
+ * @param {Number} noteNumber - Note number.
+ * @param {Boolean} isMidi - Checks if note came from midi controller.
+ * @returns {Number} Calculated frequency.
+ */
 function calculateFrequency(noteNumber, isMidi = false) {
     if (isMidi) {
         return 2 ** ((noteNumber - 69) / 12) * 440;
@@ -149,6 +170,11 @@ function calculateFrequency(noteNumber, isMidi = false) {
     return 2 ** ((noteNumber - 49) / 12) * 440;
 }
 
+/**
+ * Calculates a distortion curve based on the amount inputted.
+ * @param {Number} amount - Curve amount.
+ * @returns {Float32Array} Calculated curve.
+ */
 function makeDistortionCurve(amount) {
     const k = typeof amount === "number" ? amount : 50;
     const n_samples = 44100;
@@ -162,7 +188,10 @@ function makeDistortionCurve(amount) {
     return curve;
 }
 
-// Grab audio track via fetch() for convolver node
+/**
+ * Fetches impulse response for reverb buffer.
+ * @param {String} audioPath - Path of the audio file.
+ */
 async function fetchImpulseResponse(audioPath) {
     try {
         if (!audioPath) {
@@ -240,9 +269,34 @@ keys.forEach((key, index) => {
     key.addEventListener("touchend", event => stopNote(event.target.dataset.frequency));
 });
 
-function handleKeyboardPresses() {
-    const onScreenPianoKeys = Array.from(keys);
+/**
+ * Highlights on-screen piano key.
+ * @param {Array<HTMLDivElement>} onScreenPianoKeys - Array of on-screen piano keys.
+ * @param {Number} noteNumber - Note number.
+ */
+function activateKey(onScreenPianoKeys, noteNumber) {
+    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber));
+    if (activePianoKey) {
+        activePianoKey.classList.add("active-key");
+    }
+}
 
+/**
+ * Removes highlight from on-screen piano key.
+ * @param {Array<HTMLDivElement>} onScreenPianoKeys - Array of on-screen piano keys.
+ * @param {Number} noteNumber - Note number.
+ */
+function deactivateKey(onScreenPianoKeys, noteNumber) {
+    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber));
+    if (activePianoKey) {
+        activePianoKey.classList.remove("active-key");
+    }
+}
+
+/**
+ * Handles keyboard presses to play musical notes.
+ */
+function handleKeyboardPresses() {
     document.addEventListener("keydown", (event) => {
         if (event.repeat) return;
 
@@ -251,9 +305,7 @@ function handleKeyboardPresses() {
         if (noteEntry) {
             const frequency = calculateFrequency(noteEntry.noteNumber);
             playNote(frequency, wave);
-
-            const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteEntry.noteNumber));
-            activePianoKey.classList.add("active-key");
+            activateKey(onScreenPianoKeys, noteEntry.noteNumber);
         }
     });
 
@@ -263,40 +315,29 @@ function handleKeyboardPresses() {
         if (noteEntry) {
             const frequency = calculateFrequency(noteEntry.noteNumber);
             stopNote(frequency);
-
-            const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteEntry.noteNumber));
-            activePianoKey.classList.remove("active-key");
+            deactivateKey(onScreenPianoKeys, noteEntry.noteNumber);
         }
     });
 }
 
-// Handles MIDI
+// Handles MIDI to play musical notes.
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess().then((access) => {
         const inputs = access.inputs.values();
-        const onScreenPianoKeys = Array.from(keys);
 
         inputs.forEach((input) => {
             input.onmidimessage = (message) => {
                 const [status, noteNumber, velocity] = message.data;
                 const frequency = calculateFrequency(noteNumber, true);
-                // console.log(message.data);
 
                 // 224 and 176 - controls and mod wheel
                 // 144 and 128 - keys
                 if (status === 144 && velocity > 0) {
                     playNote(frequency, wave);
-
-                    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber - 20));
-                    if (activePianoKey) {
-                        activePianoKey.classList.add("active-key");
-                    }
+                    activateKey(onScreenPianoKeys, noteNumber - 20);
                 } else if (status === 128 && velocity === 0) {
                     stopNote(frequency);
-                    const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteNumber - 20));
-                    if (activePianoKey) {
-                        activePianoKey.classList.remove("active-key");
-                    }
+                    deactivateKey(onScreenPianoKeys, noteNumber - 20);
                 }
             };
         });

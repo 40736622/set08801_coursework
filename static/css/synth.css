@@ -209,7 +209,7 @@ input[type=range] {
 
 .active-key {
     background-color: var(--mauve);
-    border-color: var(--crust);
+    border: 2px solid var(--crust);
 }
 
 /* Tablets */
