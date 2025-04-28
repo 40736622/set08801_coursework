@@ -128,6 +128,7 @@ function playNote(noteFrequency, wave = "sine") {
         oscGain.connect(distortionNode);
 
         osc.start();
+
         activeOscillators[noteFrequency] = { osc, oscGain };
         // console.log(activeOscillators);
     }
@@ -136,7 +137,7 @@ function playNote(noteFrequency, wave = "sine") {
 // function stopNote(osc, noteFrequency) {
 function stopNote(noteFrequency) {
     if (activeOscillators[noteFrequency]) {
-        activeOscillators[noteFrequency].oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
+        activeOscillators[noteFrequency].oscGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015); // Stops pops and click sounds
         // activeOscillators[noteFrequency].osc.stop();
         delete activeOscillators[noteFrequency];
     }
@@ -224,7 +225,7 @@ keys.forEach((key, index) => {
 
 function handleKeyboardPresses() {
     const onScreenPianoKeys = Array.from(keys);
-    
+
     document.addEventListener("keydown", (event) => {
         if (event.repeat) return;
 
@@ -245,7 +246,7 @@ function handleKeyboardPresses() {
         if (noteEntry) {
             const frequency = calculateFrequency(noteEntry.noteNumber);
             stopNote(frequency);
-            
+
             const activePianoKey = onScreenPianoKeys.find((key) => Number(key.dataset.noteNumber) === Number(noteEntry.noteNumber));
             activePianoKey.classList.remove("active-key");
         }

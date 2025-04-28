@@ -1,17 +1,11 @@
 @import "main.css";
 
-/* .container {
-    border: 2px solid white;
-} */
-
 .synth {
     width: 60%;
-    /*57rem originally*/
-    height: 75dvh;
+    height: auto;
     margin-top: 1rem;
     background-color: var(--red);
     border-radius: 10px;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -20,25 +14,36 @@
 
 .controls {
     width: 90%;
-    height: 35%;
+    height: auto;
+    margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    /* border: 2px solid var(--white); */
 }
 
 .sound-design-controls {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: 0.25rem;
 }
 
+.control {
+    margin-left: 0.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.control-info {
+    margin-top: 0.35rem;
+}
+
 fieldset {
-    /* float: left; */
-    width: 45%;
+    flex: 0 0 48%;
+    padding-left: 0.25rem;
     border-color: var(--crust);
+    border-radius: 5px;
 }
 
 span {
@@ -50,14 +55,32 @@ legend {
     margin-bottom: 0.2rem;
     color: var(--white);
     background-color: var(--mantle);
+    border-radius: 5px;
 }
 
-/* .distortion-control {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-} */
+select {
+    padding: 0.35rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+option:checked {
+    font-weight: bold;
+}
+
+.sound-design-controls input[type=range] {
+    width: 65%;
+    cursor: pointer;
+}
+
+.sound-design-controls select {
+    width: 65%;
+    cursor: pointer;
+}
+
+input[type=range] {
+    accent-color: var(--lavender);
+}
 
 .basic-controls {
     display: flex;
@@ -67,19 +90,17 @@ legend {
 }
 
 .volume-control {
+    width: auto;
     display: flex;
     justify-content: center;
 }
 
-input[type=range] {
-    width: 8rem;
-    accent-color: var(--lavender);
-    outline: transparent;
-    cursor: pointer;
+.volume-control input[type=range] {
+    width: 100%;
 }
 
 .record i {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     color: var(--white);
 }
 
@@ -89,14 +110,14 @@ input[type=range] {
 }
 
 .wave-control {
-    width: 20%;
+    min-width: 20%;
     background-color: var(--mantle);
     border-radius: 20px;
-
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 0.25rem;
 }
 
 .wave-control input[type="radio"] {
@@ -111,15 +132,14 @@ input[type=range] {
     background-color: #b1b2b5;
     border-radius: 50%;
     cursor: pointer;
-
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.wave-control img {
-    width: 1.5rem;
-    height: 1.5rem;
+.wave-control label img {
+    width: 70%;
+    height: 70%;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -130,17 +150,16 @@ input[type=range] {
 
 .keyboard {
     width: 90%;
-    height: 50%;
+    height: auto;
+    margin: 0.5rem 0;
     position: relative;
     display: flex;
     flex-direction: row;
-
-    /* border: 2px solid white; */
 }
 
 .white-key {
     width: 6.67%;
-    height: 100%;
+    height: 13rem;
     background-color: var(--white);
     border: 2px solid #000000;
     border-radius: 0 0 6.5px 6.5px;
@@ -156,6 +175,26 @@ input[type=range] {
     z-index: 2;
 }
 
+.white-key span {
+    color: var(--mantle);
+}
+
+.black-key span {
+    color: var(--white);
+}
+
+.white-key span,
+.black-key span {
+    margin-bottom: 0.25rem;
+}
+
+.white-key,
+.black-key {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
 .white-key:hover,
 .black-key:hover {
     cursor: pointer;
@@ -167,6 +206,6 @@ input[type=range] {
 }
 
 .active-key {
-    background-color: var(--subtext-1);
+    background-color: var(--mauve);
     border-color: var(--crust);
 }

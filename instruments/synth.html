@@ -32,40 +32,50 @@
                         <fieldset>
                             <legend>Lowpass Filter</legend>
                             <div class="control filter-control">
+                                <div class="control-info">
+                                    <span>Frequency:</span>
+                                    <output id="filter-frequency-counter"></output>
+                                </div>
                                 <input type="range" id="filter-frequency" name="filter-frequency" min="200" max="20000"
-                                    value="20000" step="1" title="Frequency" />
-                                <span>Frequency</span>
-                                <span id="filter-frequency-counter"></span>
+                                    value="20000" step="1" title="Frequency" />    
                             </div>
                             <div class="control filter-control">
+                                <div class="control-info">
+                                    <span>Quality:</span>
+                                    <output id="filter-quality-counter"></output>
+                                </div>
                                 <input type="range" id="filter-Q" name="filter-Q" min="1" max="30" value="1" step="1"
-                                    title="Q" />
-                                <span>Quality</span>
-                                <span id="filter-quality-counter"></span>
+                                    title="Q" style="margin-bottom: 0.25rem;" />
                             </div>
                         </fieldset>
                         <fieldset>
                             <legend>Distortion</legend>
                             <div class="control distortion-control">
+                                <div class="control-info">
+                                    <span>Curve:</span>
+                                    <output id="distortion-curve-counter"></output>
+                                </div>
                                 <input type="range" id="distortion-curve" name="distortion-curve" min="0" max="500"
                                     value="0" step="1" title="Curve" />
-                                <span>Curve</span>
-                                <span id="distortion-curve-counter"></span>
                             </div>
                         </fieldset>
                         <fieldset>
                             <legend>Delay</legend>
                             <div class="control delay-control">
+                                <div class="control-info">
+                                    <span>Duration:</span>
+                                    <output id="delay-duration-counter"></output>
+                                </div>
                                 <input type="range" id="delay-duration" name="delay-duration" min="0" max="1000"
                                     value="0" step="1" title="Duration" />
-                                <span>Duration</span>
-                                <span id="delay-duration-counter"></span>
                             </div>
                             <div class="control delay-control">
+                                <div class="control-info">
+                                    <span>Feedback:</span>
+                                    <output id="delay-feedback-counter"></output>
+                                </div>
                                 <input type="range" id="delay-feedback" name="delay-feedback" min="0" max="100"
-                                    value="0" step="1" title="Feedback" />
-                                <span>Feedback</span>
-                                <span id="delay-feedback-counter"></span>
+                                    value="0" step="1" title="Feedback" style="margin-bottom: 0.25rem;" />
                             </div>
                         </fieldset>
                         <fieldset>
@@ -73,7 +83,7 @@
                             <div class="control reverb-control">
                                 <label for="impulse-response-select">Select impulse response:</label>
                                 <select name="impulse-responses" id="impulse-response-select">
-                                    <option value="">--Please choose an option--</option>
+                                    <option value="">Please select an option</option>
                                     <option value="http://127.0.0.1:5500/static/audio/impulse-responses/05b_Ocelot_Rear-DPA4061-Stereo-48K-BURST.wav">Ocelot Rear</option>
                                     <option value="http://127.0.0.1:5500/static/audio/impulse-responses/06f-CHouse-AdmiralsDressingRoom-KM184-stereo-48K-BURST.wav">Admiral Dressing Room</option>
                                     <option value="http://127.0.0.1:5500/static/audio/impulse-responses/03b-%233Ground-ST450%CE%93%C3%87%C3%B6Binaural-BURST.wav">Ground Binaural</option>
@@ -103,7 +113,7 @@
                         <div class="record">
                             <i class="bi bi-record2"></i>
                         </div>
-                        <div class="control volume-control">
+                        <div class="volume-control">
                             <img src="../static/icons/volume_up.svg" alt="Volume icon">
                             <input type="range" id="volume" name="volume" min="0" max="100" value="100"
                                 title="Volume" />
@@ -111,33 +121,33 @@
                     </div>
                 </div>
                 <div class="keyboard">
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 4%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 10.8%;"></div>
-                    <div class="white-key"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 24%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 31%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 37.5%;"></div>
-                    <div class="white-key"></div>
+                    <div class="white-key"><span>Z</span></div>
+                    <div class="black-key" style="left: 4%;"><span>S</span></div>
+                    <div class="white-key"><span>X</span></div>
+                    <div class="black-key" style="left: 10.8%;"><span>D</span></div>
+                    <div class="white-key"><span>C</span></div>
+                    <div class="white-key"><span>V</span></div>
+                    <div class="black-key" style="left: 24%;"><span>G</span></div>
+                    <div class="white-key"><span>B</span></div>
+                    <div class="black-key" style="left: 31%;"><span>H</span></div>
+                    <div class="white-key"><span>N</span></div>
+                    <div class="black-key" style="left: 37.5%;"><span>J</span></div>
+                    <div class="white-key"><span>M</span></div>
 
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 50.8%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 57.5%;"></div>
-                    <div class="white-key"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 71%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 77.5%;"></div>
-                    <div class="white-key"></div>
-                    <div class="black-key" style="left: 84.2%;"></div>
-                    <div class="white-key"></div>
+                    <div class="white-key"><span>Q</span></div>
+                    <div class="black-key" style="left: 50.8%;"><span>2</span></div>
+                    <div class="white-key"><span>W</span></div>
+                    <div class="black-key" style="left: 57.5%;"><span>3</span></div>
+                    <div class="white-key"><span>E</span></div>
+                    <div class="white-key"><span>R</span></div>
+                    <div class="black-key" style="left: 71%;"><span>5</span></div>
+                    <div class="white-key"><span>T</span></div>
+                    <div class="black-key" style="left: 77.5%;"><span>6</span></div>
+                    <div class="white-key"><span>Y</span></div>
+                    <div class="black-key" style="left: 84.2%;"><span>7</span></div>
+                    <div class="white-key"><span>U</span></div>
 
-                    <div class="white-key"></div>
+                    <div class="white-key"><span>I</span></div>
                 </div>
             </section>
         </section>
