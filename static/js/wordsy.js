@@ -43,7 +43,8 @@ let gameState = {
 // Audio
 let isMute = false;
 const flipSound = new Howl({
-    src: ["../static/audio/wordsy-flip-woosh.wav"]
+    src: ["../static/audio/wordsy-flip-woosh.wav"],
+    volume: 0.7
 });
 
 
@@ -66,7 +67,8 @@ function triggerBoxFlipping(rowBoxes) {
         setTimeout(() => {
             box.classList.add("box-flipping");
             playAudio(flipSound, isMute);
-        }, index * 200);
+
+        }, index * 250);
 
     });
 
