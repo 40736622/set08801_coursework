@@ -339,11 +339,6 @@ if (navigator.requestMIDIAccess) {
                 }
             };
         });
-
-        access.onstatechange = (event) => {
-            // Print information about the (dis)connected MIDI controller
-            console.log(event.port.name, event.port.state);
-        };
     });
 }
 
