@@ -25,16 +25,19 @@ let shuffledEmojis = shuffleArray(emojis);
 let isMute = false;
 
 const cardFlipForwardSound = new Howl({
-    src: ["../static/audio/card-match-flip-forward.wav"]
+    src: ["../static/audio/card-match-flip-forward.wav"],
+    volume: 0.8
 });
 
 const cardFlipBackwardSound = new Howl({
-    src: ["../static/audio/card-match-flip-backward.wav"]
+    src: ["../static/audio/card-match-flip-backward.wav"],
+    volume: 0.8
 
 });
 
 const pairGottenSound = new Howl({
-    src: ["../static/audio/card-match-ding.mp3"]
+    src: ["../static/audio/card-match-ding.mp3"],
+    volume: 0.5
 });
 
 // Fisher-Yates Sorting Algorithm
