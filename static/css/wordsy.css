@@ -19,6 +19,10 @@
     color: var(--subtext-0);
 }
 
+.volume-settings:hover {
+    cursor: pointer;
+}
+
 .wordle-board {
     display: grid;
     gap: 0.5rem;
