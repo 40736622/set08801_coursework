@@ -1,3 +1,5 @@
+import { playAudio, toggleVolume } from "./audio-helper.js";
+
 // DOM Elements
 const keyboardBtns = document.querySelectorAll(".btn");
 const rows = document.querySelectorAll(".row");
@@ -8,6 +10,7 @@ const gameInfoDialog = document.querySelector(".game-info");
 const dialog = document.querySelector(".announce-card");
 const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
 const dialogCloseBtn = dialog.querySelector(".btn-close");
+const volumeIcon = document.querySelector(".volume-settings i");
 
 // Board Colors
 const boxColors = {
@@ -37,17 +40,12 @@ let gameState = {
     lastDateStreakRecorded: null
 };
 
-// BUG: ✅ When Ctrl + Shift + {Letter} is pressed then it registers on the board when it shouldn't
+// Audio
+let isMute = false;
+const flipSound = new Howl({
+    src: ["../static/audio/wordsy-flip-woosh.wav"]
+});
 
-// TODO: ✅ Make the keyboard on the website work 
-//       ✅ Add play again functionality (reset board and choose another secret word)
-//       ✅ Add streak and date refresh
-//       ✅ Also make the streak work with localStorage
-//       ✅ Fix localStorage streak date reset bug
-//       - Add audio functionality
-//       ✅ Add code comments
-//       ✅ Change keyboard section back into button tags instead of divs
-//       ✅ Recheck if I have HTML semantics set properly
 
 /**
  * Get all boxes from the active row.
@@ -67,6 +65,7 @@ function triggerBoxFlipping(rowBoxes) {
     rowBoxes.forEach((box, index) => {
         setTimeout(() => {
             box.classList.add("box-flipping");
+            playAudio(flipSound, isMute);
         }, index * 200);
 
     });
@@ -128,7 +127,7 @@ function submitGuessWord() {
         incrementDailyStreak();
         announceResult();
     } else {
-        if (gameState.currentAttempt < 6) {
+        if (gameState.currentAttempt < MAX_ATTEMPTS) {
             gameState.currentAttempt++;
 
             changeActiveRow();
@@ -336,7 +335,7 @@ async function getWordleWords() {
  * @returns A random word.
  */
 async function getRandomWord() {
-    words = await getWordleWords();
+    const words = await getWordleWords();
 
     if (words.length > 0) {
         return words[Math.floor(Math.random() * words.length)];
@@ -468,5 +467,8 @@ resetDailyStreak();
 updateDailyStreak();
 startInput();
 
+volumeIcon.addEventListener("click", () => {
+    isMute = toggleVolume(isMute, volumeIcon);
+});
 diaglogPlayAgainBtn.addEventListener("click", resetWordleGame); // Close dialog and start a new game
 dialogCloseBtn.addEventListener("click", () => dialog.close()); // Close dialog

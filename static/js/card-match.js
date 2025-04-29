@@ -1,3 +1,5 @@
+import { playAudio, toggleVolume } from "./audio-helper.js";
+
 // DOM Elements
 const cards = document.querySelectorAll(".card");
 const pairsLeftText = document.getElementById("pairs-left");
@@ -6,6 +8,7 @@ const bestTimeText = document.getElementById("best-time");
 const dialog = document.querySelector(".announce-card");
 const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
 const dialogCloseBtn = dialog.querySelector(".btn-close");
+const volumeIcon = document.querySelector(".volume-settings i");
 
 // Game State
 const emojis = ["😊", "🙃", "😢", "🙌", "💀", "🤖", "🐺", "🐸", "😊", "🙃", "😢", "🙌", "💀", "🤖", "🐺", "🐸"];
@@ -18,11 +21,21 @@ let gameStartTime;
 let seconds = 0;
 let shuffledEmojis = shuffleArray(emojis);
 
-// TODO: ✅ Add timer
-//       Add audio functionality
-//       ✅ Show remaining pairs left
-//       ✅ Add localStorage functionality with best time saved
-//       ✅ Add code comments
+// Audio
+let isMute = false;
+
+const cardFlipForwardSound = new Howl({
+    src: ["../static/audio/card-match-flip-forward.wav"]
+});
+
+const cardFlipBackwardSound = new Howl({
+    src: ["../static/audio/card-match-flip-backward.wav"]
+
+});
+
+const pairGottenSound = new Howl({
+    src: ["../static/audio/card-match-ding.mp3"]
+});
 
 // Fisher-Yates Sorting Algorithm
 // https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
@@ -50,10 +63,12 @@ function changeFlipState(isFlipped, card, cardSpan) {
         cardSpan.style.visibility = "visible";
         card.style.backgroundColor = "white";
         card.dataset.flipped = "true";
+        playAudio(cardFlipForwardSound, isMute);
     } else {
         cardSpan.style.visibility = "hidden";
         card.style.backgroundColor = "#181825";
         card.dataset.flipped = "false";
+        playAudio(cardFlipBackwardSound, isMute);
     }
 }
 
@@ -66,6 +81,7 @@ function checkPair(cards) {
     if (card1.querySelector("span").textContent === card2.querySelector("span").textContent) {
         pairsGotten++;
         pairsLeftText.textContent = MAX_PAIRS - pairsGotten;
+        playAudio(pairGottenSound, isMute);
     } else {
         card1.classList.add("card-flip");
         card2.classList.add("card-flip");
@@ -101,7 +117,7 @@ function resetGame() {
     holdPair = [];
     pairsGotten = 0;
     pairsLeftText.textContent = MAX_PAIRS;
-    bestTime = 0;
+    // bestTime = 0;
     seconds = 0;
     timerText.textContent = "0:00";
     shuffledEmojis = shuffleArray(emojis);
@@ -225,5 +241,8 @@ cards.forEach((card, index) => {
 
 //removeCardMatchLocalStorage();
 updateBestTime();
+volumeIcon.addEventListener("click", () => {
+    isMute = toggleVolume(isMute, volumeIcon);
+});
 diaglogPlayAgainBtn.addEventListener("click", resetGame); // Close dialog and start a new game
 dialogCloseBtn.addEventListener("click", () => dialog.close()); // Close dialog

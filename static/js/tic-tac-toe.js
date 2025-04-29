@@ -1,4 +1,4 @@
-import { playAudio } from "./audio-helper.js";
+import { playAudio, toggleVolume } from "./audio-helper.js";
 
 // DOM Elements
 const boardBtns = document.querySelectorAll(".box");
@@ -12,23 +12,10 @@ const playerOWinsText = document.querySelector("#player-o-score");
 const tiesText = document.querySelector("#tie-score");
 
 // Game State
-const soundPath = "../static/audio/collect-ring.mp3";
-let isMute = false;
 let playerXWins = 0, playerOWins = 0, ties = 0;
 let xMoves = [], oMoves = [];
 let turnO = false;
 let computerPlaying = true;
-
-// TODO: ✅ Add Visual and Audio cues
-//       ✅ Add localStorage functionality
-//       ✅ Structure code better
-//       ✅ Add X, O and Tie counters
-//       ✅ Add blinking for the winning combination
-//       ✅ Change popup to a dialog in html and javascript
-//       ✅ Add reset game functionality
-//       ✅ Add code comments
-//       ✅ Fix HTML page to have proper HTML Semantics
-//       ✅ Fix box blinking, only make it trigger for the button text (probably need to add a span element for each button).
 
 // All the possible winnning combinations for Tic-Tac-Toe based on button values
 const winningCombinations = [
@@ -42,14 +29,13 @@ const winningCombinations = [
     [2, 4, 6]
 ];
 
-/**
- * Toggles volume mute/unmute.
- */
-function toggleVolume() {
-    isMute = !isMute;
-    volumeIcon.classList.remove(isMute ? "bi-volume-up-fill" : "bi-volume-mute-fill");
-    volumeIcon.classList.add(isMute ? "bi-volume-mute-fill" : "bi-volume-up-fill");
-}
+// Audio 
+let isMute = false;
+
+const movePlayedSound = new Howl({
+    src: ["../static/audio/tic-tac-toe-move.wav"],
+    volume: 2
+});
 
 /**
  * Toggles between 1 or 2 player mode.
@@ -145,7 +131,7 @@ function announceWinner(xWon, oWon) {
 
     setTimeout(() => {
         dialog.showModal(); // Open dialog
-    }, 750); 
+    }, 750);
 }
 
 /**
@@ -204,7 +190,7 @@ function handleMoves(btn) {
     }
 
     btn.disabled = true;
-    playAudio(soundPath, isMute);
+    playAudio(movePlayedSound, isMute);
 
     if (xWon || oWon) {
         disableButtons();
@@ -296,6 +282,8 @@ function triggerComputerMove() {
 updateScores();
 boardBtns.forEach((btn) => btn.addEventListener("click", () => handleMoves(btn)));
 playerSettings.addEventListener("click", toggleComputerPlaying);
-volumeIcon.addEventListener("click", toggleVolume);
+volumeIcon.addEventListener("click", () => {
+    isMute = toggleVolume(isMute, volumeIcon);
+});
 diaglogPlayAgainBtn.addEventListener("click", resetGame); // Close dialog and start a new game
 dialogCloseBtn.addEventListener("click", () => dialog.close()); // Close dialog
