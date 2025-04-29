@@ -100,6 +100,10 @@ input[type=range] {
     width: 100%;
 }
 
+.volume-control input[type=range]:hover {
+    cursor: pointer;
+}
+
 .wave-control {
     min-width: 20%;
     background-color: var(--mantle);
