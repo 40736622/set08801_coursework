@@ -22,8 +22,6 @@ delayDurationCounter.textContent = `${delayDuration.value} ms`;
 delayFeedbackCounter.textContent = `${delayFeedback.value}%`;
 distortionCurveCounter.textContent = distortionCurve.value;
 
-// Remember: MediaStream Recording API & Midi API
-
 const audioCtx = new (AudioContext || webkitAudioContext)();
 const activeOscillators = {};
 const keyboardNoteMap = [

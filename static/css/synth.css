@@ -100,17 +100,6 @@ input[type=range] {
     width: 100%;
 }
 
-.record i {
-    font-size: 2.25rem;
-    color: var(--white);
-}
-
-.record i:hover {
-    color: var(--text);
-    /*active color - #ff2e63*/
-    cursor: pointer;
-}
-
 .wave-control {
     min-width: 20%;
     background-color: var(--mantle);
@@ -188,6 +177,7 @@ input[type=range] {
 .white-key span,
 .black-key span {
     margin-bottom: 0.25rem;
+    user-select: none;
 }
 
 .white-key,
@@ -260,14 +250,6 @@ input[type=range] {
     .wave-control label {
         width: 1.3rem;
         height: 1.3rem;
-    }
-
-    .record {
-        margin-left: 3rem;
-    }
-
-    .record i {
-        font-size: 1.9rem;
     }
 
     .volume-control {
