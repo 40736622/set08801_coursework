@@ -40,9 +40,12 @@ const pairGottenSound = new Howl({
     volume: 0.5
 });
 
-// Fisher-Yates Sorting Algorithm
-// https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
+
 /**
+ * Fisher-Yates Sorting Algorithm
+ * Source: freeCodeCamp
+ * https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
+ * 
  * Randomly shuffles an array.
  * @param {Array} arr - Holds elements to be shuffled.
  * @returns Shuffled array.

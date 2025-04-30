@@ -169,6 +169,9 @@ function calculateFrequency(noteNumber, isMidi = false) {
 }
 
 /**
+ * Source: MDN Web Docs
+ * https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
+ * 
  * Calculates a distortion curve based on the amount inputted.
  * @param {Number} amount - Curve amount.
  * @returns {Float32Array} Calculated curve.
@@ -187,6 +190,9 @@ function makeDistortionCurve(amount) {
 }
 
 /**
+ * Adapted from: MDN Web Docs
+ * https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createConvolver
+ * 
  * Fetches impulse response for reverb buffer.
  * @param {String} audioPath - Path of the audio file.
  */

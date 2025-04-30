@@ -218,6 +218,9 @@ function handleInput(input) {
 }
 
 /**
+ * Adapted from: Stack Overflow (Nina Scholz)
+ * https://stackoverflow.com/questions/72865151/duplicate-verification-in-wordle-clone
+ * 
  * Evaluates each letter of the current guess word.
  */
 function checkLetters() {
@@ -320,7 +323,7 @@ async function getWordleWords() {
     // const jsonUrl = "http://127.0.0.1:5500/static/wordle.json" // For local development
     const jsonUrl = "https://40736622.github.io/set08801_coursework/static/wordle.json"
     try {
-        const response = await fetch(jsonUrl); // JSON file taken from: https://gist.github.com/mrhead/f0ced2726394588e8d9863e0568b6473
+        const response = await fetch(jsonUrl); // Original JSON file taken from: https://gist.github.com/mrhead/f0ced2726394588e8d9863e0568b6473
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
