@@ -118,6 +118,8 @@ masterGainNode.connect(audioCtx.destination);   // destination
  * Plays musical note based on frequency and wave type.
  * @param {Number} noteFrequency - Frequency.
  * @param {String} wave - Wave type.
+ * @param {Boolean} isMidi - Checks if note input came from a midi controller.
+ * @param {Number} velocity - Velocity of midi input.
  */
 function playNote(noteFrequency, wave = "sine", isMidi = false, velocity = undefined) {
     if (!activeOscillators[noteFrequency]) {
