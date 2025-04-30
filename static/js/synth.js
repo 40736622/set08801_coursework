@@ -119,7 +119,7 @@ masterGainNode.connect(audioCtx.destination);   // destination
  * @param {Number} noteFrequency - Frequency.
  * @param {String} wave - Wave type.
  */
-function playNote(noteFrequency, wave = "sine") {
+function playNote(noteFrequency, wave = "sine", isMidi = false, velocity = undefined) {
     if (!activeOscillators[noteFrequency]) {
         const osc = new OscillatorNode(audioCtx, {
             type: wave,
@@ -132,7 +132,17 @@ function playNote(noteFrequency, wave = "sine") {
 
         // Connect nodes
         osc.connect(oscGain);
-        oscGain.connect(distortionNode);
+
+        if (isMidi) {
+            const velocityGainAmount = (1 / 127) * velocity;
+            const velocityGain = audioCtx.createGain();
+            velocityGain.gain.value = velocityGainAmount;
+
+            oscGain.connect(velocityGain);
+            velocityGain.connect(distortionNode);
+        } else {
+            oscGain.connect(distortionNode);
+        }
 
         osc.start(); // start oscillator
 
@@ -337,7 +347,7 @@ if (navigator.requestMIDIAccess) {
                 // 224 and 176 - controls and mod wheel
                 // 144 and 128 - keys
                 if (status === 144 && velocity > 0) {
-                    playNote(frequency, wave);
+                    playNote(frequency, wave, true, velocity);
                     activateKey(onScreenPianoKeys, noteNumber - 20);
                 } else if (status === 128 && velocity === 0) {
                     stopNote(frequency);
