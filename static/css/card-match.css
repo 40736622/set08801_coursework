@@ -58,6 +58,7 @@
 
 .card span {
     font-size: 4rem;
+    user-select: none;
     visibility: hidden;
 }
 
