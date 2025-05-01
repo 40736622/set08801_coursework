@@ -5,7 +5,6 @@ const keyboardBtns = document.querySelectorAll(".btn");
 const rows = document.querySelectorAll(".row");
 let activeRow = document.querySelector(".row-active");
 const dailyStreakText = document.querySelector("#daily-streak");
-const audioIcon = document.querySelector(".volume-settings i");
 const gameInfoDialog = document.querySelector(".game-info");
 const dialog = document.querySelector(".announce-card");
 const diaglogPlayAgainBtn = dialog.querySelector(".btn-play-again");
@@ -352,7 +351,6 @@ async function getRandomWord() {
  */
 async function startWordleGame() {
     gameState.secretWord = await getRandomWord();
-    /*console.log(gameState.secretWord);*/
 }
 
 /**
@@ -360,7 +358,6 @@ async function startWordleGame() {
  */
 async function resetWordleGame() {
     gameState.secretWord = await getRandomWord();
-    /*console.log(gameState.secretWord);*/
     gameState.status = "in_progress";
     gameState.currentGuess = "";
     gameState.currentAttempt = 1;
@@ -411,8 +408,10 @@ function removeWordleLocalStorage() {
  */
 function updateDailyStreak() {
     const lastSavedGameState = getWordleLocalStorage();
+    // console.log(lastSavedGameState);
     if (lastSavedGameState) {
         gameState.dailyStreak = lastSavedGameState.dailyStreak ?? 0;
+        gameState.lastDateStreakRecorded = lastSavedGameState.lastDateStreakRecorded;
         dailyStreakText.textContent = gameState.dailyStreak;
     }
 }
@@ -436,7 +435,6 @@ function restoreGameState() {
 
     if (lastSavedGameState && lastSavedGameState.status === "in_progress" && lastSavedGameState.currentAttempt > 1) {
         gameState = lastSavedGameState;
-        /*console.log(gameState.secretWord);*/
 
         changeActiveRow();
 
@@ -460,6 +458,7 @@ function restoreGameState() {
  */
 function resetDailyStreak() {
     const lastSavedGameState = getWordleLocalStorage();
+    // console.log(lastSavedGameState);
     if (lastSavedGameState && lastSavedGameState.lastDateStreakRecorded !== new Date().getDate()) {
         gameState.lastDateStreakRecorded = null;
         gameState.dailyStreak = 0;
